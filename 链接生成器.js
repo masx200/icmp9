@@ -2,6 +2,8 @@ const urlarray = [];
 const uuid = "e583ef48-19fe-4bce-b786-af30f43be840";
 import { 优选域名 } from "./优选域名.js";
 const online = JSON.parse(await fs.promises.readFile("online.json", "utf-8"));
+// let count = 0;
+// loop:
 for (const item of online.countries) {
   //   const name = item.name;
   const code = item.code;
@@ -26,6 +28,11 @@ for (const item of online.countries) {
     // console.log(config);
     console.log("vmess://" + btoa(JSON.stringify(config)));
     urlarray.push("vmess://" + btoa(JSON.stringify(config)));
+
+    // count++;
+    // if (count > 3000) {
+    //   break loop;
+    // }
   }
 }
 import fs from "fs";

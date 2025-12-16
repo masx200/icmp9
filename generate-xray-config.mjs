@@ -67,6 +67,7 @@ function generateProxyConfig(host, code) {
 
 // 主函数
 async function generateConfig() {
+  // let count = 0;
   try {
     console.log(`成功读取 ${优选域名.length} 个优选域名`);
     console.log(`读取到 ${countries.length} 个国家代码`);
@@ -79,7 +80,7 @@ async function generateConfig() {
     // 生成新的outbounds数组 - 按照链接生成器的逻辑
     const urlarray = [];
     const newOutbounds = [];
-
+    // loop:
     for (const item of countries) {
       const code = item.code;
       for (const host of 优选域名) {
@@ -91,6 +92,10 @@ async function generateConfig() {
           const proxyConfig = generateProxyConfig(host, code);
           newOutbounds.push(proxyConfig);
         }
+        // count++;
+        // if (count > 3000) {
+        //   break loop;
+        // }
       }
     }
 
