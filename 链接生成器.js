@@ -31,7 +31,5 @@ for (const item of online.countries) {
 import fs from "fs";
 await fs.promises.writeFile(
   "分享链接.txt",
-  Array.from(
-    new Set(urlarray),
-  ).join("\n"),
+  Array.from(new Set(urlarray)).join("\n"),
 );
