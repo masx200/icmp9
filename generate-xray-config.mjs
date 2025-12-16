@@ -2,6 +2,7 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { 优选域名 } from "./优选域名.js";
+import sha256 from "./sha256.js";
 const uuid = "e583ef48-19fe-4bce-b786-af30f43be840";
 // 获取当前文件的目录路径（ES模块中需要这样获取）
 const __filename = fileURLToPath(import.meta.url);
@@ -15,53 +16,49 @@ const countries = onlineData.countries;
 
 // 代理配置模板
 const proxyTemplate = {
-  "protocol": "vmess",
-  "settings": {
-    "vnext": [
+  protocol: "vmess",
+  settings: {
+    vnext: [
       {
-        "address": "", // 将被替换为域名
-        "port": 443,
-        "users": [
+        address: "", // 将被替换为域名
+        port: 443,
+        users: [
           {
-            "id": uuid,
-            "alterId": 0,
-            "email": "t@t.tt",
-            "security": "auto",
+            id: uuid,
+            alterId: 0,
+            email: "t@t.tt",
+            security: "auto",
           },
         ],
       },
     ],
   },
-  "streamSettings": {
-    "network": "ws",
-    "security": "tls",
-    "tlsSettings": {
-      "echConfigList": "gitlab.io+https://223.5.5.5/dns-query",
-      "echForceQuery": "full",
-      "allowInsecure": false,
-      "serverName": "tunnel.icmp9.com",
-      "alpn": [
-        "h3",
-        "h2",
-        "http/1.1",
-      ],
+  streamSettings: {
+    network: "ws",
+    security: "tls",
+    tlsSettings: {
+      echConfigList: "gitlab.io+https://223.5.5.5/dns-query",
+      echForceQuery: "full",
+      allowInsecure: false,
+      serverName: "tunnel.icmp9.com",
+      alpn: ["h3", "h2", "http/1.1"],
     },
-    "wsSettings": {
-      "path": "/cr", // 将被替换为国家代码
-      "host": "tunnel.icmp9.com",
-      "headers": {},
+    wsSettings: {
+      path: "/cr", // 将被替换为国家代码
+      host: "tunnel.icmp9.com",
+      headers: {},
     },
   },
-  "mux": {
-    "enabled": false,
-    "concurrency": -1,
+  mux: {
+    enabled: false,
+    concurrency: -1,
   },
 };
 
 // 生成代理配置的函数 - 按照链接生成器的逻辑
 function generateProxyConfig(host, code) {
   const config = JSON.parse(JSON.stringify(proxyTemplate));
-  config.tag = `proxy-${code}-${host}`;
+  config.tag = `proxy-` + sha256(`${code}-${host}`);
   config.settings.vnext[0].address = host;
   config.streamSettings.wsSettings.path = `/${code}`;
   return config;
@@ -98,13 +95,13 @@ async function generateConfig() {
 
     // 添加direct和block配置
     newOutbounds.push({
-      "tag": "direct",
-      "protocol": "freedom",
+      tag: "direct",
+      protocol: "freedom",
     });
 
     newOutbounds.push({
-      "tag": "block",
-      "protocol": "blackhole",
+      tag: "block",
+      protocol: "blackhole",
     });
 
     // 替换outbounds
@@ -130,7 +127,7 @@ async function generateConfig() {
       console.log(`分享链接.txt中的链接数量: ${linkCount}`);
       console.log(
         `数量是否一致: ${
-          (newOutbounds.length - 2) === linkCount ? "✓ 是" : "✗ 否"
+          newOutbounds.length - 2 === linkCount ? "✓ 是" : "✗ 否"
         }`,
       );
     } catch (err) {
