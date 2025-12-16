@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { 优选域名 } from "./优选域名.js";
-
+const uuid = "e583ef48-19fe-4bce-b786-af30f43be840";
 // 获取当前文件的目录路径（ES模块中需要这样获取）
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -23,7 +23,7 @@ const proxyTemplate = {
         "port": 443,
         "users": [
           {
-            "id": "e583ef48-19fe-4bce-b786-af30f43be840",
+            "id": uuid,
             "alterId": 0,
             "email": "t@t.tt",
             "security": "auto",
