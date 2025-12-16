@@ -1,14 +1,16 @@
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import {优选域名} from "./优选域名.js";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+import { 优选域名 } from "./优选域名.js";
 
 // 获取当前文件的目录路径（ES模块中需要这样获取）
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // 读取online.json获取国家代码
-const onlineData = JSON.parse(fs.readFileSync(path.join(__dirname, 'online.json'), 'utf8'));
+const onlineData = JSON.parse(
+  fs.readFileSync(path.join(__dirname, "online.json"), "utf8"),
+);
 const countries = onlineData.countries;
 
 // 代理配置模板
@@ -17,18 +19,18 @@ const proxyTemplate = {
   "settings": {
     "vnext": [
       {
-        "address": "",  // 将被替换为域名
+        "address": "", // 将被替换为域名
         "port": 443,
         "users": [
           {
             "id": "e583ef48-19fe-4bce-b786-af30f43be840",
             "alterId": 0,
             "email": "t@t.tt",
-            "security": "auto"
-          }
-        ]
-      }
-    ]
+            "security": "auto",
+          },
+        ],
+      },
+    ],
   },
   "streamSettings": {
     "network": "ws",
@@ -41,19 +43,19 @@ const proxyTemplate = {
       "alpn": [
         "h3",
         "h2",
-        "http/1.1"
-      ]
+        "http/1.1",
+      ],
     },
     "wsSettings": {
-      "path": "/cr",  // 将被替换为国家代码
+      "path": "/cr", // 将被替换为国家代码
       "host": "tunnel.icmp9.com",
-      "headers": {}
-    }
+      "headers": {},
+    },
   },
   "mux": {
     "enabled": false,
-    "concurrency": -1
-  }
+    "concurrency": -1,
+  },
 };
 
 // 生成代理配置的函数 - 按照链接生成器的逻辑
@@ -72,8 +74,8 @@ async function generateConfig() {
     console.log(`读取到 ${countries.length} 个国家代码`);
 
     // 读取模板文件
-    const templatePath = path.join(__dirname, 'xray-config-template.json');
-    const templateContent = fs.readFileSync(templatePath, 'utf8');
+    const templatePath = path.join(__dirname, "xray-config-template.json");
+    const templateContent = fs.readFileSync(templatePath, "utf8");
     const config = JSON.parse(templateContent);
 
     // 生成新的outbounds数组 - 按照链接生成器的逻辑
@@ -97,39 +99,45 @@ async function generateConfig() {
     // 添加direct和block配置
     newOutbounds.push({
       "tag": "direct",
-      "protocol": "freedom"
+      "protocol": "freedom",
     });
 
     newOutbounds.push({
       "tag": "block",
-      "protocol": "blackhole"
+      "protocol": "blackhole",
     });
 
     // 替换outbounds
     config.outbounds = newOutbounds;
 
     // 输出新配置文件
-    const outputPath = path.join(__dirname, 'xray-output-random.json');
+    const outputPath = path.join(__dirname, "xray-output-random.json");
     await fs.promises.writeFile(outputPath, JSON.stringify(config, null, 2));
 
     console.log(`配置文件已生成: ${outputPath}`);
     console.log(`国家数量: ${countries.length}`);
     console.log(`优选域名数量: ${优选域名.length}`);
-    console.log(`去重后生成的代理配置数量: ${newOutbounds.length - 2}`);  // 减去direct和block
+    console.log(`去重后生成的代理配置数量: ${newOutbounds.length - 2}`); // 减去direct和block
     console.log(`输出文件包含 ${newOutbounds.length} 个出站配置`);
 
     // 验证数量是否与分享链接.txt一致
     try {
-      const linkContent = await fs.promises.readFile(path.join(__dirname, '分享链接.txt'), 'utf8');
-      const linkCount = linkContent.trim().split('\n').length;
+      const linkContent = await fs.promises.readFile(
+        path.join(__dirname, "分享链接.txt"),
+        "utf8",
+      );
+      const linkCount = linkContent.trim().split("\n").length;
       console.log(`分享链接.txt中的链接数量: ${linkCount}`);
-      console.log(`数量是否一致: ${(newOutbounds.length - 2) === linkCount ? '✓ 是' : '✗ 否'}`);
+      console.log(
+        `数量是否一致: ${
+          (newOutbounds.length - 2) === linkCount ? "✓ 是" : "✗ 否"
+        }`,
+      );
     } catch (err) {
-      console.log('无法读取分享链接.txt进行验证');
+      console.log("无法读取分享链接.txt进行验证");
     }
-
   } catch (error) {
-    console.error('生成配置文件时出错:', error);
+    console.error("生成配置文件时出错:", error);
   }
 }
 

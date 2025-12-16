@@ -1,6 +1,6 @@
 const urlarray = [];
 const uuid = "e583ef48-19fe-4bce-b786-af30f43be840";
-import {优选域名} from "./优选域名.js";
+import { 优选域名 } from "./优选域名.js";
 const online = JSON.parse(await fs.promises.readFile("online.json", "utf-8"));
 for (const item of online.countries) {
   //   const name = item.name;
@@ -29,5 +29,9 @@ for (const item of online.countries) {
   }
 }
 import fs from "fs";
-await fs.promises.writeFile("分享链接.txt",  Array.from(
-  new Set(urlarray)).join("\n"));
+await fs.promises.writeFile(
+  "分享链接.txt",
+  Array.from(
+    new Set(urlarray),
+  ).join("\n"),
+);
