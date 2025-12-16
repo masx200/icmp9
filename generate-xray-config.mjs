@@ -16,6 +16,7 @@ const countries = onlineData.countries;
 
 // 代理配置模板
 const proxyTemplate = {
+  tag: "proxy-1",
   protocol: "vmess",
   settings: {
     vnext: [
@@ -46,7 +47,7 @@ const proxyTemplate = {
     wsSettings: {
       path: "/cr", // 将被替换为国家代码
       host: "tunnel.icmp9.com",
-      headers: {},
+      headers: { host: "tunnel.icmp9.com" },
     },
   },
   mux: {
