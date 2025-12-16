@@ -2,6 +2,7 @@ const urlarray = [];
 const uuid = "e583ef48-19fe-4bce-b786-af30f43be840";
 const 优选域名 = [
   "www.wto.org",
+  "icook.hk",
   "cloudflare.182682.xyz",
   "tunnel.icmp9.com",
   "cf.877774.xyz",
