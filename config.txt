@@ -1,0 +1,5 @@
+host|www.csgo.com
+port|443
+tls|1
+wshost|tunnel.icmp9.com
+ws|1
