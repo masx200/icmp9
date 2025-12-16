@@ -14,7 +14,7 @@ for (const item of online.countries) {
   for (const host of 优选域名) {
     const config = {
       v: "2",
-      ps: "icmp9-" + code,
+      ps: "icmp9-" + code + "-" + host,
       add: host,
       port: "443",
       id: uuid,
