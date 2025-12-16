@@ -57,9 +57,10 @@ const proxyTemplate = {
 };
 
 // 生成代理配置的函数 - 按照链接生成器的逻辑
-function generateProxyConfig(host, code) {
+function generateProxyConfig(host, code /* ,index */) {
   const config = JSON.parse(JSON.stringify(proxyTemplate));
-  config.tag = `proxy-` + sha256(`${code}-${host}`);
+  config.tag = `proxy-` /*+*/ /* index.toString()  */ +
+    sha256(`${code}-${host}`).slice(0, 35);
   config.settings.vnext[0].address = host;
   config.streamSettings.wsSettings.path = `/${code}`;
   return config;
@@ -67,6 +68,7 @@ function generateProxyConfig(host, code) {
 
 // 主函数
 async function generateConfig() {
+  // let index=1
   // let count = 0;
   try {
     console.log(`成功读取 ${优选域名.length} 个优选域名`);
@@ -89,8 +91,9 @@ async function generateConfig() {
         // 去重逻辑：使用Set来避免重复
         if (!urlarray.includes(configKey)) {
           urlarray.push(configKey);
-          const proxyConfig = generateProxyConfig(host, code);
+          const proxyConfig = generateProxyConfig(host, code /* ,index */);
           newOutbounds.push(proxyConfig);
+          // index++;
         }
         // count++;
         // if (count > 3000) {
