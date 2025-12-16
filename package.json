@@ -1,1 +1,21 @@
-{ "type": "module" }
+{
+  "type": "module",
+  "name": "icmp9",
+  "version": "1.0.0",
+  "description": "![Version](https://img.shields.io/badge/version-2.7-blue.svg) ![License](https://img.shields.io/badge/license-MIT-green.svg) ![Platform](https://img.shields.io/badge/platform-Alpine%20%7C%20Debian%20%7C%20Ubuntu-lightgrey.svg)",
+  "main": "链接生成器.js",
+  "scripts": {
+    "generate": "node 链接生成器.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://gitlab.com/masx200/icmp9.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://gitlab.com/masx200/icmp9/issues"
+  },
+  "homepage": "https://gitlab.com/masx200/icmp9#readme"
+}
