@@ -19,5 +19,8 @@
   "bugs": {
     "url": "https://gitlab.com/masx200/icmp9/issues"
   },
-  "homepage": "https://gitlab.com/masx200/icmp9#readme"
+  "homepage": "https://gitlab.com/masx200/icmp9#readme",
+  "dependencies": {
+    "ipify": "^7.0.0"
+  }
 }

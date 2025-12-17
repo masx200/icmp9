@@ -1,0 +1,23 @@
+lockfileVersion: '9.0'
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
+importers:
+
+  .:
+    dependencies:
+      ipify:
+        specifier: ^7.0.0
+        version: 7.0.0
+
+packages:
+
+  ipify@7.0.0:
+    resolution: {integrity: sha512-H8CqGnJiFGcwIdn9k7vqc4vA3MHWWt/MelArQiH2Yoz5QLps6Tb7jrLAm127dDOtWsqKdHzpSOmwTR6A9Wll8g==}
+    engines: {node: '>=20'}
+
+snapshots:
+
+  ipify@7.0.0: {}
