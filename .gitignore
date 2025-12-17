@@ -1,7 +1,7 @@
 server.log
 .claude/settings.local.json
 node_modules
-
+*.bak
 # 环境变量文件（包含敏感信息）
 .env
 .env.local
