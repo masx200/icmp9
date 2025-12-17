@@ -29,6 +29,7 @@
   },
   "homepage": "https://gitlab.com/masx200/icmp9#readme",
   "dependencies": {
-    "ipify": "^7.0.0"
+    "ipify": "^7.0.0",
+    "undici": "^7.16.0"
   }
 }
