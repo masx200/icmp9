@@ -53,4 +53,4 @@ if (import.meta.main) {
   testAPICall();
 }
 
-export { testCookieSanitization, testAPICall };
+export { testAPICall, testCookieSanitization };

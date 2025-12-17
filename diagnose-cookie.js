@@ -28,15 +28,17 @@ function diagnoseCookie() {
         char: cookie[i],
         code: charCode,
         hex: charCode.toString(16),
-        context: cookie.substring(Math.max(0, i-10), i+10)
+        context: cookie.substring(Math.max(0, i - 10), i + 10),
       });
     }
   }
 
   if (hasHighChars) {
     console.log("❌ 发现高字节字符 (>255):");
-    problemIndices.forEach(item => {
-      console.log(`  位置 ${item.index}: "${item.char}" (${item.code}/0x${item.hex})`);
+    problemIndices.forEach((item) => {
+      console.log(
+        `  位置 ${item.index}: "${item.char}" (${item.code}/0x${item.hex})`,
+      );
       console.log(`    上下文: ...${item.context}...`);
     });
   } else {
@@ -44,7 +46,7 @@ function diagnoseCookie() {
   }
 
   // 尝试清理Cookie
-  const sanitized = cookie.replace(/[^\x00-\x7F]/g, '');
+  const sanitized = cookie.replace(/[^\x00-\x7F]/g, "");
   console.log("清理后长度:", sanitized.length);
   console.log("长度变化:", cookie.length - sanitized.length);
 
@@ -69,14 +71,15 @@ async function testSimpleAPICall() {
       "accept": "*/*",
       "accept-language": "zh-CN,zh;q=0.9,en;q=0.8",
       "priority": "u=1, i",
-      "sec-ch-ua": "\"Google Chrome\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+      "sec-ch-ua":
+        '"Google Chrome";v="143", "Chromium";v="143", "Not A(Brand";v="24"',
       "sec-ch-ua-mobile": "?0",
-      "sec-ch-ua-platform": "\"Windows\"",
+      "sec-ch-ua-platform": '"Windows"',
       "sec-fetch-dest": "empty",
       "sec-fetch-mode": "cors",
       "sec-fetch-site": "same-origin",
       "Referer": "https://icmp9.com/user/dashboard",
-      "cookie": sanitizedCookie
+      "cookie": sanitizedCookie,
     };
 
     console.log("发送请求到 /api/user/info...");
@@ -84,7 +87,7 @@ async function testSimpleAPICall() {
     const response = await fetch("https://icmp9.com/api/user/info", {
       headers,
       body: null,
-      method: "GET"
+      method: "GET",
     });
 
     console.log("响应状态:", response.status);
@@ -99,7 +102,6 @@ async function testSimpleAPICall() {
       const text = await response.text();
       console.log("响应内容:", text);
     }
-
   } catch (error) {
     console.error("❌ 请求失败:", error.message);
     console.error("错误详情:", error);

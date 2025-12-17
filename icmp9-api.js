@@ -12,13 +12,14 @@ class Icmp9API {
       "accept": "*/*",
       "accept-language": "zh-CN,zh;q=0.9,en;q=0.8",
       "priority": "u=1, i",
-      "sec-ch-ua": "\"Google Chrome\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+      "sec-ch-ua":
+        '"Google Chrome";v="143", "Chromium";v="143", "Not A(Brand";v="24"',
       "sec-ch-ua-mobile": "?0",
-      "sec-ch-ua-platform": "\"Windows\"",
+      "sec-ch-ua-platform": '"Windows"',
       "sec-fetch-dest": "empty",
       "sec-fetch-mode": "cors",
       "sec-fetch-site": "same-origin",
-      "Referer": "https://icmp9.com/user/dashboard"
+      "Referer": "https://icmp9.com/user/dashboard",
     };
   }
 
@@ -80,7 +81,7 @@ class Icmp9API {
           index: i,
           char: cookie[i],
           code: charCode,
-          hex: '0x' + charCode.toString(16)
+          hex: "0x" + charCode.toString(16),
         });
       }
     }
@@ -94,8 +95,8 @@ class Icmp9API {
     // 移除或替换可能导致编码问题的字符
     // 保留标准的Cookie字符：字母、数字、常见符号
     const sanitized = cookie
-      .replace(/[^\x00-\x7F]/g, '') // 移除非ASCII字符
-      .replace(/[\uFFFD\uFEFF]/g, '') // 移除BOM和替换字符
+      .replace(/[^\x00-\x7F]/g, "") // 移除非ASCII字符
+      .replace(/[\uFFFD\uFEFF]/g, "") // 移除BOM和替换字符
       .trim();
 
     if (sanitized.length !== cookie.length) {
@@ -115,7 +116,7 @@ class Icmp9API {
       const response = await fetch(`${this.baseURL}${endpoint}`, {
         headers: this.getHeaders(),
         body: null,
-        method: "GET"
+        method: "GET",
       });
 
       if (!response.ok) {
@@ -143,7 +144,7 @@ class Icmp9API {
       console.log(`API密钥: ${result.data.api_key}`);
       console.log(`流量配额: ${result.data.traffic_quota} bytes`);
       console.log(`已用流量: ${result.data.traffic_used} bytes`);
-      console.log(`账户状态: ${result.data.is_active ? '激活' : '未激活'}`);
+      console.log(`账户状态: ${result.data.is_active ? "激活" : "未激活"}`);
       return result.data;
     } else {
       throw new Error("获取用户信息失败");
@@ -180,7 +181,9 @@ class Icmp9API {
     if (result.success) {
       console.log(`成功获取白名单IP列表，共 ${result.data.length} 个IP:`);
       result.data.forEach((ip, index) => {
-        console.log(`${index + 1}. ${ip.ipv4} (${ip.ip_type}) - ${ip.remark || '无备注'}`);
+        console.log(
+          `${index + 1}. ${ip.ipv4} (${ip.ip_type}) - ${ip.remark || "无备注"}`,
+        );
       });
       return result.data;
     } else {
@@ -199,13 +202,13 @@ class Icmp9API {
       const [userInfo, whitelistQuota, whitelistIPs] = await Promise.all([
         this.getUserInfo(),
         this.getWhitelistQuota(),
-        this.getWhitelistIPs()
+        this.getWhitelistIPs(),
       ]);
 
       return {
         userInfo,
         whitelistQuota,
-        whitelistIPs
+        whitelistIPs,
       };
     } catch (error) {
       console.error("获取用户数据失败:", error.message);
@@ -220,8 +223,8 @@ class Icmp9API {
   async getIPv6Addresses() {
     const whitelistData = await this.getWhitelistIPs();
     const ipv6Addresses = whitelistData
-      .filter(ip => ip.ip_type === 'ipv6')
-      .map(ip => ip.ipv4);
+      .filter((ip) => ip.ip_type === "ipv6")
+      .map((ip) => ip.ipv4);
 
     console.log(`提取到 ${ipv6Addresses.length} 个IPv6地址:`);
     ipv6Addresses.forEach((ip, index) => {

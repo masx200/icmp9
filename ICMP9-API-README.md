@@ -1,6 +1,7 @@
 # ICMP9.COM API 客户端
 
-这是一个用于访问 ICMP9.COM API 的 JavaScript 客户端，支持获取用户信息、白名单配额和IP地址列表。
+这是一个用于访问 ICMP9.COM API 的 JavaScript
+客户端，支持获取用户信息、白名单配额和IP地址列表。
 
 ## 功能特性
 
@@ -108,6 +109,7 @@ const data = await icmp9API.getAllUserData();
 获取用户基本信息
 
 **返回数据：**
+
 - `id`: 用户ID
 - `username`: 用户名
 - `email`: 邮箱
@@ -123,6 +125,7 @@ const data = await icmp9API.getAllUserData();
 获取白名单配额信息
 
 **返回数据：**
+
 - `quota`: 总配额
 - `used`: 已使用数量
 - `available`: 可用配额
@@ -132,6 +135,7 @@ const data = await icmp9API.getAllUserData();
 获取白名单IP地址列表
 
 **返回数据：**
+
 - `_id`: 记录ID
 - `ipv4`: IP地址（字段名可能包含IPv6）
 - `ip_type`: IP类型（ipv6/ipv4）
@@ -143,6 +147,7 @@ const data = await icmp9API.getAllUserData();
 专门获取IPv6地址数组
 
 **返回数据：**
+
 - IPv6地址字符串数组
 
 ## 运行示例
@@ -188,16 +193,19 @@ icmp9/
 ## 故障排除
 
 ### Cookie无效
+
 - 确认Cookie格式正确
 - 检查Cookie是否过期
 - 重新登录获取新的Cookie
 
 ### 网络请求失败
+
 - 检查网络连接
 - 确认防火墙设置
 - 验证ICMP9.COM服务状态
 
 ### 环境变量问题
+
 - 确认环境变量名称正确 (`ICMP9_COOKIE`)
 - 检查变量值是否完整
 - 验证环境变量是否正确加载

@@ -12,9 +12,13 @@ async function example() {
     if (!process.env.ICMP9_COOKIE) {
       console.log("环境变量 ICMP9_COOKIE 未设置");
       console.log("请设置环境变量后运行，例如：");
-      console.log("export ICMP9_COOKIE='server_name_session=xxx; cf_clearance=xxx; connect.sid=xxx'");
+      console.log(
+        "export ICMP9_COOKIE='server_name_session=xxx; cf_clearance=xxx; connect.sid=xxx'",
+      );
       console.log("或者在 Windows 中：");
-      console.log("set ICMP9_COOKIE=server_name_session=xxx; cf_clearance=xxx; connect.sid=xxx");
+      console.log(
+        "set ICMP9_COOKIE=server_name_session=xxx; cf_clearance=xxx; connect.sid=xxx",
+      );
       console.log();
       console.log("或者在代码中手动设置（不推荐，仅用于测试）：");
       console.log("icmp9API.setCookie('your_cookie_here');");
@@ -34,9 +38,19 @@ async function example() {
     console.log("\n=== 数据汇总 ===");
     console.log(`用户: ${allData.userInfo.username}`);
     console.log(`API密钥: ${allData.userInfo.api_key}`);
-    console.log(`剩余流量: ${allData.userInfo.traffic_quota - allData.userInfo.traffic_used} bytes`);
-    console.log(`白名单可用: ${allData.whitelistQuota.available}/${allData.whitelistQuota.quota}`);
-    console.log(`IPv6地址数量: ${allData.whitelistIPs.filter(ip => ip.ip_type === 'ipv6').length}`);
+    console.log(
+      `剩余流量: ${
+        allData.userInfo.traffic_quota - allData.userInfo.traffic_used
+      } bytes`,
+    );
+    console.log(
+      `白名单可用: ${allData.whitelistQuota.available}/${allData.whitelistQuota.quota}`,
+    );
+    console.log(
+      `IPv6地址数量: ${
+        allData.whitelistIPs.filter((ip) => ip.ip_type === "ipv6").length
+      }`,
+    );
 
     console.log("\n=== 方法2: 单独获取IPv6地址列表 ===");
     const ipv6Addresses = await icmp9API.getIPv6Addresses();
@@ -53,8 +67,8 @@ async function example() {
       ipv6Addresses,
       userInfo,
       quota,
-      ipList
-    })
+      ipList,
+    });
   } catch (error) {
     console.error("示例执行失败:", error.message);
   }

@@ -1,5 +1,5 @@
 // get-ipv6.ipshudi.js
-import {fetch}from"undici"
+import { fetch } from "undici";
 
 async function getIPv6Address() {
   try {
@@ -10,16 +10,17 @@ async function getIPv6Address() {
       "headers": {
         "accept": "application/json, text/javascript, */*; q=0.01",
         "accept-language": "zh-CN,zh;q=0.9,en;q=0.8",
-        "sec-ch-ua": "\"Google Chrome\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+        "sec-ch-ua":
+          '"Google Chrome";v="143", "Chromium";v="143", "Not A(Brand";v="24"',
         "sec-ch-ua-mobile": "?0",
-        "sec-ch-ua-platform": "\"Windows\"",
+        "sec-ch-ua-platform": '"Windows"',
         "sec-fetch-dest": "empty",
         "sec-fetch-mode": "cors",
         "sec-fetch-site": "same-site",
-        "Referer": "https://www.ipshudi.com/"
+        "Referer": "https://www.ipshudi.com/",
       },
       "body": null,
-      "method": "GET"
+      "method": "GET",
     });
 
     const result = await response.json();
