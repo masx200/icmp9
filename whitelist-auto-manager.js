@@ -297,7 +297,7 @@ class WhitelistAutoManager {
       if (setCookieHeader) {
         // 解析并合并 cookie
         const existingCookies = cookie.parseCookie(this.currentCookie);
-        const newCookies = cookie.parseCookie(setCookieHeader.split(";")[0]);
+        const newCookies = cookie.parseCookie(setCookieHeader/* .split(";")[0] */);
 
         // 合并 cookies，新的覆盖旧的
         const mergedCookies = Object.assign({}, existingCookies, newCookies);
