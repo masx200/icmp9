@@ -191,6 +191,51 @@ class Icmp9API {
     }
   }
 /**
+   * 添加白名单IP
+   * @param {string} ip - IP地址（IPv4或IPv6）
+   * @param {string} remark - 备注信息（可选）
+   * @returns {Promise<Object>} 添加结果
+   */
+  async addWhitelistIP(ip, remark = "") {
+    console.log(`添加白名单IP: ${ip}...`);
+
+    try {
+      const response = await fetch(`${this.baseURL}/api/user/whitelist`, {
+        headers: {
+          ...this.getHeaders(),
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({
+          ipv4: ip,
+          remark: remark,
+        }),
+        method: "POST",
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      const result = await response.json();
+
+      if (result.success) {
+        console.log("添加成功");
+        console.log(`IP: ${result.data.ipv4} (${result.data.ip_type})`);
+        console.log(`ID: ${result.data._id}`);
+        if (result.data.remark) {
+          console.log(`备注: ${result.data.remark}`);
+        }
+        return result;
+      } else {
+        throw new Error(result.message || "添加失败");
+      }
+    } catch (error) {
+      console.error(`添加白名单IP失败 (${ip}):`, error.message);
+      throw error;
+    }
+  }
+
+  /**
    * 删除白名单IP
    * @param {string} ipId - IP地址的ID
    * @returns {Promise<Object>} 删除结果
