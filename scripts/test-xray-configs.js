@@ -113,7 +113,7 @@ async function testXrayConfigFile(configPath, xrayPath) {
           stdout += data.toString();
           // Limit output size to prevent memory issues
           if (stdout.length > 50000) {
-            stdout = stdout.substring(0, 50000) + "\n... (output truncated)";
+            stdout = stdout//.substring(0, 50000) + "\n... (output truncated)";
           }
         });
 
@@ -122,7 +122,7 @@ async function testXrayConfigFile(configPath, xrayPath) {
           stderr += data.toString();
           // Limit output size to prevent memory issues
           if (stderr.length > 50000) {
-            stderr = stderr.substring(0, 50000) + "\n... (output truncated)";
+            stderr = stderr//.substring(0, 50000) + "\n... (output truncated)";
           }
         });
 
