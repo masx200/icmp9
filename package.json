@@ -30,6 +30,7 @@
   },
   "homepage": "https://gitlab.com/masx200/icmp9#readme",
   "dependencies": {
+    "cookie": "^1.1.1",
     "ipify": "^7.0.0",
     "undici": "^7.16.0"
   }
