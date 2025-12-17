@@ -190,7 +190,38 @@ class Icmp9API {
       throw new Error("获取白名单IP列表失败");
     }
   }
+/**
+   * 删除白名单IP
+   * @param {string} ipId - IP地址的ID
+   * @returns {Promise<Object>} 删除结果
+   */
+  async deleteWhitelistIP(ipId) {
+    console.log(`删除白名单IP (ID: ${ipId})...`);
 
+    try {
+      const response = await fetch(`${this.baseURL}/api/user/whitelist/${ipId}`, {
+        headers: this.getHeaders(),
+        body: null,
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      const result = await response.json();
+
+      if (result.success) {
+        console.log("删除成功");
+        return result;
+      } else {
+        throw new Error(result.message || "删除失败");
+      }
+    } catch (error) {
+      console.error(`删除白名单IP失败 (${ipId}):`, error.message);
+      throw error;
+    }
+  }
   /**
    * 获取所有用户相关信息
    * @returns {Promise<Object>} 包含用户信息、配额和IP列表的完整数据
