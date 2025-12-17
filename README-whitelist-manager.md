@@ -19,16 +19,19 @@
 首先需要设置ICMP9的Cookie环境变量：
 
 **Linux/macOS:**
+
 ```bash
 export ICMP9_COOKIE='your_cookie_here'
 ```
 
 **Windows (PowerShell):**
+
 ```powershell
 $env:ICMP9_COOKIE = 'your_cookie_here'
 ```
 
 **Windows (CMD):**
+
 ```cmd
 set ICMP9_COOKIE=your_cookie_here
 ```
@@ -118,6 +121,7 @@ constructor() {
 ## 停止程序
 
 按 `Ctrl+C` 可以安全停止程序。程序会：
+
 1. 停止定时器
 2. 显示最终统计信息
 3. 优雅退出
@@ -125,16 +129,19 @@ constructor() {
 ## 故障排除
 
 ### 1. 无法获取IPv6地址
+
 - 检查网络连接是否支持IPv6
 - 确认防火墙没有阻止IPv6连接
 - 某些网络环境可能需要配置IPv6
 
 ### 2. Cookie设置问题
+
 - 确保Cookie字符串正确且未过期
 - 检查环境变量是否正确设置
 - 可以先运行 `icmp9API.getAllUserData()` 测试Cookie是否有效
 
 ### 3. 白名单配额问题
+
 - 检查ICMP9账户的白名单配额限制
 - 确认账户状态正常且未过期
 
@@ -157,6 +164,7 @@ constructor() {
 ### 作为系统服务运行
 
 **Linux (systemd):**
+
 ```ini
 [Unit]
 Description=ICMP9 Whitelist Auto Manager
@@ -176,6 +184,7 @@ WantedBy=multi-user.target
 ```
 
 **Windows (使用PM2):**
+
 ```bash
 # 安装PM2
 npm install -g pm2

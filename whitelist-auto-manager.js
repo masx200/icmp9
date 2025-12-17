@@ -37,8 +37,16 @@ class WhitelistAutoManager {
       if (ipInfo && ipInfo.ip && ipInfo.ip !== "unknown" && ipInfo.isIPv6) {
         this.currentIPv6 = ipInfo.ip;
         console.log(`✅ 获取到IPv6地址: ${this.currentIPv6}`);
-        console.log(`   位置: ${ipInfo.country || "未知"} (${ipInfo.country_code || "未知"})`);
-        console.log(`   ASN: ${ipInfo.asn || "未知"} - ${ipInfo.as_name || ipInfo.org || "未知"}`);
+        console.log(
+          `   位置: ${ipInfo.country || "未知"} (${
+            ipInfo.country_code || "未知"
+          })`,
+        );
+        console.log(
+          `   ASN: ${ipInfo.asn || "未知"} - ${
+            ipInfo.as_name || ipInfo.org || "未知"
+          }`,
+        );
         return this.currentIPv6;
       } else {
         console.log("❌ 未能获取到有效的IPv6地址");
@@ -57,7 +65,7 @@ class WhitelistAutoManager {
    * @returns {boolean} 是否存在
    */
   isIPInWhitelist(ip, whitelist) {
-    return whitelist.some(item => item.ipv4 === ip);
+    return whitelist.some((item) => item.ipv4 === ip);
   }
 
   /**
@@ -82,7 +90,9 @@ class WhitelistAutoManager {
   async performWhitelistManagement() {
     try {
       this.lastCheckTime = new Date();
-      console.log(`\n🕐 [${this.lastCheckTime.toLocaleString()}] 开始执行白名单检查...`);
+      console.log(
+        `\n🕐 [${this.lastCheckTime.toLocaleString()}] 开始执行白名单检查...`,
+      );
 
       // 1. 获取当前IPv6地址
       const currentIPv6 = await this.getCurrentIPv6();
@@ -95,7 +105,9 @@ class WhitelistAutoManager {
       // 2. 获取白名单配额信息
       console.log("📊 检查白名单配额...");
       const quota = await icmp9API.getWhitelistQuota();
-      console.log(`   总配额: ${quota.quota}, 已使用: ${quota.used}, 可用: ${quota.available}`);
+      console.log(
+        `   总配额: ${quota.quota}, 已使用: ${quota.used}, 可用: ${quota.available}`,
+      );
 
       // 3. 获取当前白名单
       console.log("📋 获取当前白名单...");
@@ -114,7 +126,9 @@ class WhitelistAutoManager {
 
         const oldestEntry = this.getOldestWhitelistEntry(whitelist);
         if (oldestEntry) {
-          console.log(`   删除最旧条目: ${oldestEntry.ipv4} (创建于: ${oldestEntry.created_at})`);
+          console.log(
+            `   删除最旧条目: ${oldestEntry.ipv4} (创建于: ${oldestEntry.created_at})`,
+          );
           await icmp9API.deleteWhitelistIP(oldestEntry._id);
           console.log("✅ 成功删除最旧的白名单条目");
         } else {
@@ -125,7 +139,7 @@ class WhitelistAutoManager {
       }
 
       // 6. 添加新的IPv6地址到白名单
-      const timestamp = new Date().toISOString().slice(0, 19).replace('T', ' ');
+      const timestamp = new Date().toISOString().slice(0, 19).replace("T", " ");
       const remark = `自动添加 - ${timestamp}`;
 
       console.log(`➕ 添加IPv6地址到白名单: ${currentIPv6}`);
@@ -134,7 +148,6 @@ class WhitelistAutoManager {
       console.log("✅ 成功添加IPv6地址到白名单");
       this.successCount++;
       return true;
-
     } catch (error) {
       console.error("❌ 白名单管理失败:", error.message);
       this.errorCount++;
@@ -183,7 +196,9 @@ class WhitelistAutoManager {
 
       retryCount++;
       if (retryCount < this.maxRetries) {
-        console.log(`🔄 第 ${retryCount} 次重试 (${this.retryDelay / 1000} 秒后)...`);
+        console.log(
+          `🔄 第 ${retryCount} 次重试 (${this.retryDelay / 1000} 秒后)...`,
+        );
         await this.sleep(this.retryDelay);
       }
     }
@@ -226,7 +241,9 @@ class WhitelistAutoManager {
     console.log(`   失败次数: ${this.errorCount}`);
     console.log(`   总检查次数: ${this.successCount + this.errorCount}`);
     if (this.successCount + this.errorCount > 0) {
-      const successRate = ((this.successCount / (this.successCount + this.errorCount)) * 100).toFixed(1);
+      const successRate =
+        ((this.successCount / (this.successCount + this.errorCount)) * 100)
+          .toFixed(1);
       console.log(`   成功率: ${successRate}%`);
     }
     if (this.lastCheckTime) {
@@ -240,7 +257,7 @@ class WhitelistAutoManager {
    * @param {number} ms - 毫秒
    */
   sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 }
 
@@ -258,29 +275,29 @@ async function main() {
   const manager = new WhitelistAutoManager();
 
   // 处理程序退出信号
-  process.on('SIGINT', () => {
-    console.log('\n\n📡 收到退出信号 (Ctrl+C)');
+  process.on("SIGINT", () => {
+    console.log("\n\n📡 收到退出信号 (Ctrl+C)");
     manager.stop();
     process.exit(0);
   });
 
-  process.on('SIGTERM', () => {
-    console.log('\n\n📡 收到终止信号');
+  process.on("SIGTERM", () => {
+    console.log("\n\n📡 收到终止信号");
     manager.stop();
     process.exit(0);
   });
 
   // 处理未捕获的异常
-  process.on('uncaughtException', (error) => {
-    console.error('\n❌ 未捕获的异常:', error.message);
+  process.on("uncaughtException", (error) => {
+    console.error("\n❌ 未捕获的异常:", error.message);
     console.error(error.stack);
     manager.stop();
     process.exit(1);
   });
 
-  process.on('unhandledRejection', (reason, promise) => {
-    console.error('\n❌ 未处理的Promise拒绝:', reason);
-    console.error('Promise:', promise);
+  process.on("unhandledRejection", (reason, promise) => {
+    console.error("\n❌ 未处理的Promise拒绝:", reason);
+    console.error("Promise:", promise);
   });
 
   // 启动定时任务
@@ -290,7 +307,7 @@ async function main() {
 // 如果直接运行此文件，则执行主程序
 if (import.meta.main) {
   main().catch((error) => {
-    console.error('❌ 程序启动失败:', error.message);
+    console.error("❌ 程序启动失败:", error.message);
     console.error(error.stack);
     process.exit(1);
   });

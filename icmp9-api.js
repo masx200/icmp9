@@ -190,7 +190,7 @@ class Icmp9API {
       throw new Error("获取白名单IP列表失败");
     }
   }
-/**
+  /**
    * 添加白名单IP
    * @param {string} ip - IP地址（IPv4或IPv6）
    * @param {string} remark - 备注信息（可选）
@@ -244,11 +244,14 @@ class Icmp9API {
     console.log(`删除白名单IP (ID: ${ipId})...`);
 
     try {
-      const response = await fetch(`${this.baseURL}/api/user/whitelist/${ipId}`, {
-        headers: this.getHeaders(),
-        body: null,
-        method: "DELETE",
-      });
+      const response = await fetch(
+        `${this.baseURL}/api/user/whitelist/${ipId}`,
+        {
+          headers: this.getHeaders(),
+          body: null,
+          method: "DELETE",
+        },
+      );
 
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);

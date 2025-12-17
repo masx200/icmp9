@@ -5,7 +5,7 @@
   "description": "![Version](https://img.shields.io/badge/version-2.7-blue.svg) ![License](https://img.shields.io/badge/license-MIT-green.svg) ![Platform](https://img.shields.io/badge/platform-Alpine%20%7C%20Debian%20%7C%20Ubuntu-lightgrey.svg)",
   "main": "链接生成器.js",
   "scripts": {
-    "whitelist-auto-manager":"node whitelist-auto-manager.js",
+    "whitelist-auto-manager": "node whitelist-auto-manager.js",
     "format": "deno fmt",
     "build": "echo 'Building icmp9 project...' && node generate-xray-config.mjs",
     "start": "echo 'Starting icmp9 project...' && node 链接生成器.js",
