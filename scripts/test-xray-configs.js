@@ -222,7 +222,7 @@ function findXrayExecutable() {
     path.join(CONFIG_DIR, "xray.exe"),
     path.join(process.cwd(), "xray"),
     path.join(process.cwd(), "xray.exe"),
-
+    "E:/迅雷下载/v2rayN-windows-64-SelfContained/bin/xray/xray.exe",
     // Windows paths
     "C:/Program Files/xray/xray.exe",
     "C:/xray/xray.exe",

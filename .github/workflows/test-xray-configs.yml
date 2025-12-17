@@ -98,6 +98,7 @@ jobs:
         run: |
           echo "🔗 生成 VMess 链接..."
           node "链接生成器.js"
+      - run: npm run test:config:verbose    
 
       - name: Test Xray configurations
         run: |
