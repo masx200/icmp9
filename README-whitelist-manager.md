@@ -59,9 +59,9 @@ npx whitelist-auto-manager.js
 🔍 正在获取当前IPv6地址...
 🔍 开始获取当前IPv6地址信息...
 尝试 ipinfo.io API...
-✅ ipinfo.io 获取IPv6成功: 240e:b8e:35cd:a601:546:f26f:d783:a63c
+✅ ipinfo.io 获取IPv6成功: ***e:b*e:**cd:a***:***:f**f:d***:a**c
 ✅ IPv6信息获取完成
-✅ 获取到IPv6地址: 240e:b8e:35cd:a601:546:f26f:d783:a63c
+✅ 获取到IPv6地址: ***e:b*e:**cd:a***:***:f**f:d***:a**c
    位置: 中国 (CN)
    ASN: 57965 - China Unicom
 📊 检查白名单配额...
@@ -71,11 +71,11 @@ npx whitelist-auto-manager.js
 可用配额: 2
 📋 获取当前白名单...
 成功获取白名单IP列表，共 8 个IP:
-✅ 当前IPv6地址 240e:b8e:35cd:a601:546:f26f:d783:a63c 不在白名单中，添加到白名单
-➕ 添加IPv6地址到白名单: 240e:b8e:35cd:a601:546:f26f:d783:a63c
-添加白名单IP: 240e:b8e:35cd:a601:546:f26f:d783:a63c...
+✅ 当前IPv6地址 ***e:b*e:**cd:a***:***:f**f:d***:a**c 不在白名单中，添加到白名单
+➕ 添加IPv6地址到白名单: ***e:b*e:**cd:a***:***:f**f:d***:a**c
+添加白名单IP: ***e:b*e:**cd:a***:***:f**f:d***:a**c...
 添加成功
-IP: 240e:b8e:35cd:a601:546:f26f:d783:a63c (ipv6)
+IP: ***e:b*e:**cd:a***:***:f**f:d***:a**c (ipv6)
 ID: 694268a912c61f540962bbb9
 备注: 自动添加 - 2025-12-17 16:30:05
 ✅ 成功添加IPv6地址到白名单
