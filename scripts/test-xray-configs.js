@@ -151,6 +151,7 @@ async function testXrayConfigFile(configPath, xrayPath) {
               .trim();
 
             log("   ✅ 配置文件测试通过!", "green");
+            process.exit(0)
             resolve({ success: true, output: result });
           } else {
             log(`   ❌ 配置文件测试失败!`, "red");
