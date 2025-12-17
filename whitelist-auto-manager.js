@@ -3,7 +3,9 @@
 // whitelist-auto-manager.js
 import { icmp9API } from "./icmp9-api.js";
 import { fetch } from "undici";
-import { cookie, Cookie } from "cookie";
+// import { cookie, Cookie } from "cookie";
+import cookie from "cookie";
+// const { cookie, Cookie } = pkg;
 import IPv6InfoFetcher from "./ipv6-info.js";
 
 /**
@@ -16,7 +18,7 @@ class WhitelistAutoManager {
     this.currentIPv6 = null;
     this.isRunning = false;
     this.intervalId = null;
-    this.checkInterval = 2*60 * 1000; // 1分钟（毫秒）
+    this.checkInterval = 2 * 60 * 1000; // 1分钟（毫秒）
     this.maxRetries = 5;
     this.retryDelay = 5000; // 5秒
     this.lastCheckTime = null;
@@ -99,7 +101,6 @@ class WhitelistAutoManager {
 
       // 0. 刷新 Cookie
       await this.refreshCookie();
-
 
       // 1. 获取当前IPv6地址
       const currentIPv6 = await this.getCurrentIPv6();
@@ -248,9 +249,10 @@ class WhitelistAutoManager {
     console.log(`   失败次数: ${this.errorCount}`);
     console.log(`   总检查次数: ${this.successCount + this.errorCount}`);
     if (this.successCount + this.errorCount > 0) {
-      const successRate =
-        ((this.successCount / (this.successCount + this.errorCount)) * 100)
-          .toFixed(1);
+      const successRate = (
+        (this.successCount / (this.successCount + this.errorCount)) *
+        100
+      ).toFixed(1);
       console.log(`   成功率: ${successRate}%`);
     }
     if (this.lastCheckTime) {
@@ -259,7 +261,7 @@ class WhitelistAutoManager {
     console.log("-".repeat(40));
   }
 
-/**
+  /**
    * 刷新 Cookie
    * 访问 dashboard 页面获取新的 cookie
    * @returns {Promise<string>} 新的 Cookie 字符串
@@ -270,38 +272,40 @@ class WhitelistAutoManager {
 
       // 第一次访问，获取新的 cookie
       const response = await fetch("https://icmp9.com/user/dashboard", {
-        "headers": {
-          "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+        headers: {
+          accept:
+            "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
           "accept-language": "zh-CN,zh;q=0.9,en;q=0.8",
-          "priority": "u=0, i",
-          "sec-ch-ua": "\"Google Chrome\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+          priority: "u=0, i",
+          "sec-ch-ua":
+            '"Google Chrome";v="143", "Chromium";v="143", "Not A(Brand";v="24"',
           "sec-ch-ua-mobile": "?0",
-          "sec-ch-ua-platform": "\"Windows\"",
+          "sec-ch-ua-platform": '"Windows"',
           "sec-fetch-dest": "document",
           "sec-fetch-mode": "navigate",
           "sec-fetch-site": "none",
           "sec-fetch-user": "?1",
           "upgrade-insecure-requests": "1",
-          "cookie": this.currentCookie
+          cookie: this.currentCookie,
         },
-        "body": null,
-        "method": "GET"
+        body: null,
+        method: "GET",
       });
 
       // 获取响应中的 set-cookie 头
-      const setCookieHeader = response.headers.get('set-cookie');
+      const setCookieHeader = response.headers.get("set-cookie");
       if (setCookieHeader) {
         // 解析并合并 cookie
-        const existingCookies = cookie.parse(this.currentCookie);
-        const newCookies = cookie.parse(setCookieHeader.split(';')[0]);
+        const existingCookies = cookie.parseCookie(this.currentCookie);
+        const newCookies = cookie.parseCookie(setCookieHeader.split(";")[0]);
 
         // 合并 cookies，新的覆盖旧的
         const mergedCookies = Object.assign({}, existingCookies, newCookies);
-
+        console.log(Object.fromEntries(Object.entries(mergedCookies)));
         // 转换回 cookie 字符串
         this.currentCookie = Object.entries(mergedCookies)
-          .map(([key, value]) => key + '=' + value)
-          .join('; ');
+          .map(([key, value]) => key + "=" + value)
+          .join("; ");
 
         // 更新 icmp9API 的 cookie
         icmp9API.setCookie(this.currentCookie);

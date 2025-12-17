@@ -1,11 +1,10 @@
-lockfileVersion: '9.0'
+lockfileVersion: "9.0"
 
 settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
 importers:
-
   .:
     dependencies:
       cookie:
@@ -19,21 +18,25 @@ importers:
         version: 7.16.0
 
 packages:
-
   cookie@1.1.1:
-    resolution: {integrity: sha512-ei8Aos7ja0weRpFzJnEA9UHJ/7XQmqglbRwnf2ATjcB9Wq874VKH9kfjjirM6UhU2/E5fFYadylyhFldcqSidQ==}
-    engines: {node: '>=18'}
+    resolution: {
+      integrity: sha512-ei8Aos7ja0weRpFzJnEA9UHJ/7XQmqglbRwnf2ATjcB9Wq874VKH9kfjjirM6UhU2/E5fFYadylyhFldcqSidQ==,
+    }
+    engines: { node: ">=18" }
 
   ipify@7.0.0:
-    resolution: {integrity: sha512-H8CqGnJiFGcwIdn9k7vqc4vA3MHWWt/MelArQiH2Yoz5QLps6Tb7jrLAm127dDOtWsqKdHzpSOmwTR6A9Wll8g==}
-    engines: {node: '>=20'}
+    resolution: {
+      integrity: sha512-H8CqGnJiFGcwIdn9k7vqc4vA3MHWWt/MelArQiH2Yoz5QLps6Tb7jrLAm127dDOtWsqKdHzpSOmwTR6A9Wll8g==,
+    }
+    engines: { node: ">=20" }
 
   undici@7.16.0:
-    resolution: {integrity: sha512-QEg3HPMll0o3t2ourKwOeUAZ159Kn9mx5pnzHRQO8+Wixmh88YdZRiIwat0iNzNNXn0yoEtXJqFpyW7eM8BV7g==}
-    engines: {node: '>=20.18.1'}
+    resolution: {
+      integrity: sha512-QEg3HPMll0o3t2ourKwOeUAZ159Kn9mx5pnzHRQO8+Wixmh88YdZRiIwat0iNzNNXn0yoEtXJqFpyW7eM8BV7g==,
+    }
+    engines: { node: ">=20.18.1" }
 
 snapshots:
-
   cookie@1.1.1: {}
 
   ipify@7.0.0: {}
