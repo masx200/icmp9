@@ -15,7 +15,7 @@ class WhitelistAutoManager {
     this.isRunning = false;
     this.intervalId = null;
     this.checkInterval = 2*60 * 1000; // 1分钟（毫秒）
-    this.maxRetries = 3;
+    this.maxRetries = 5;
     this.retryDelay = 5000; // 5秒
     this.lastCheckTime = null;
     this.successCount = 0;
