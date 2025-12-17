@@ -6,8 +6,16 @@
   "main": "链接生成器.js",
   "scripts": {
     "format": "deno fmt",
+    "build": "echo 'Building icmp9 project...' && node generate-xray-config.mjs",
+    "start": "echo 'Starting icmp9 project...' && node 链接生成器.js",
     "generate": "node 链接生成器.js",
-    "convert": "node generate-xray-config.mjs"
+    "convert": "node generate-xray-config.mjs",
+    "test:xray": "node scripts/test-xray-configs.js",
+    "test:xray:verbose": "node scripts/test-xray-configs.js --verbose",
+    "test:config": "npm run test:xray",
+    "test:config:verbose": "npm run test:xray:verbose",
+    "test:all": "npm run build && npm run start && npm run test:config",
+    "test:all:verbose": "npm run build && npm run start && npm run test:config:verbose"
   },
   "repository": {
     "type": "git",
