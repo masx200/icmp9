@@ -113,7 +113,7 @@ async function testXrayConfigFile(configPath, xrayPath) {
           stdout += data.toString();
           // Limit output size to prevent memory issues
           if (stdout.length > 50000) {
-            stdout = stdout//.substring(0, 50000) + "\n... (output truncated)";
+            stdout = stdout; //.substring(0, 50000) + "\n... (output truncated)";
           }
         });
 
@@ -122,7 +122,7 @@ async function testXrayConfigFile(configPath, xrayPath) {
           stderr += data.toString();
           // Limit output size to prevent memory issues
           if (stderr.length > 50000) {
-            stderr = stderr//.substring(0, 50000) + "\n... (output truncated)";
+            stderr = stderr; //.substring(0, 50000) + "\n... (output truncated)";
           }
         });
 
@@ -274,10 +274,12 @@ function analyzeConfigFeatures(configPath) {
     // Check for specific outbound types
     if (config.outbounds) {
       features.hasDirectOutbound = config.outbounds.some(
-        (outbound) => outbound.tag === "direct" || outbound.protocol === "freedom",
+        (outbound) =>
+          outbound.tag === "direct" || outbound.protocol === "freedom",
       );
       features.hasBlockOutbound = config.outbounds.some(
-        (outbound) => outbound.tag === "block" || outbound.protocol === "blackhole",
+        (outbound) =>
+          outbound.tag === "block" || outbound.protocol === "blackhole",
       );
       features.hasVmessOutbound = config.outbounds.some(
         (outbound) => outbound.protocol === "vmess",
@@ -285,7 +287,7 @@ function analyzeConfigFeatures(configPath) {
 
       // Count vmess outbounds
       features.vmessCount = config.outbounds.filter(
-        (outbound) => outbound.protocol === "vmess"
+        (outbound) => outbound.protocol === "vmess",
       ).length;
     }
 

@@ -5,21 +5,21 @@ on:
   push:
     branches: [main, master]
     paths:
-      - 'xray-config-template.json'
-      - 'generate-xray-config.mjs'
-      - '链接生成器.js'
-      - '优选域名.js'
-      - 'package.json'
-      - 'scripts/test-xray-configs.js'
+      - "xray-config-template.json"
+      - "generate-xray-config.mjs"
+      - "链接生成器.js"
+      - "优选域名.js"
+      - "package.json"
+      - "scripts/test-xray-configs.js"
   pull_request:
     branches: [main, master]
     paths:
-      - 'xray-config-template.json'
-      - 'generate-xray-config.mjs'
-      - '链接生成器.js'
-      - '优选域名.js'
-      - 'package.json'
-      - 'scripts/test-xray-configs.js'
+      - "xray-config-template.json"
+      - "generate-xray-config.mjs"
+      - "链接生成器.js"
+      - "优选域名.js"
+      - "package.json"
+      - "scripts/test-xray-configs.js"
 
 jobs:
   test-xray-configs:
@@ -98,7 +98,7 @@ jobs:
         run: |
           echo "🔗 生成 VMess 链接..."
           node "链接生成器.js"
-      - run: npm run test:config:verbose    
+      - run: npm run test:config:verbose
 
       - name: Test Xray configurations
         run: |
