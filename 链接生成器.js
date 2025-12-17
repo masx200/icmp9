@@ -1,6 +1,6 @@
 import fs from "fs";
 import { 优选域名, 优选域名ipv4 } from "./优选域名.js";
-
+const uuid = "e583ef48-19fe-4bce-b786-af30f43be840";
 if (import.meta.main) {
   await generateipv6links();
   await generateipv4links();
@@ -8,7 +8,7 @@ if (import.meta.main) {
 
 async function generateipv6links() {
   const urlarray = [];
-  const uuid = "e583ef48-19fe-4bce-b786-af30f43be840";
+
   const online = JSON.parse(await fs.promises.readFile("online.json", "utf-8"));
   // let count = 0;
   // loop:
@@ -51,7 +51,7 @@ async function generateipv6links() {
 
 async function generateipv4links() {
   const urlarray = [];
-  const uuid = "e583ef48-19fe-4bce-b786-af30f43be840";
+
   const online = JSON.parse(await fs.promises.readFile("online.json", "utf-8"));
   // let count = 0;
   // loop:
