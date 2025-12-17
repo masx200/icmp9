@@ -1,193 +1,270 @@
-# ICMP9.COM 网络切换工具
+# ICMP9.COM 代理服务客户端工具包
 
 ![Version](https://img.shields.io/badge/version-2.7-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 ![Platform](https://img.shields.io/badge/platform-Alpine%20%7C%20Debian%20%7C%20Ubuntu-lightgrey.svg)
 
-ICMP9.COM 网络切换工具是一个基于 VMess 代理的脚本，支持 TUN
-网卡和全局代理两种模式，让您可以轻松切换到不同地区的网络节点。
+一个功能完整的 ICMP9.COM 代理服务客户端工具包，提供自动化安装、配置管理和 API
+接口等功能。
 
-## 功能特点
+## 🌟 主要特性
 
-- 🌍 **全球节点覆盖**：支持 100+ 地区的网络节点切换
-- 🔓 **解锁流媒体**：可访问 Netflix、Disney+、HBO 等地区限制内容
-- 🤖 **AI 服务访问**：支持 ChatGPT、Claude 等 AI 服务访问
-- 🔄 **两种代理模式**：TUN 网卡模式和全局代理模式
-- 📊 **流量管理**：实时监控流量使用情况
-- 🛡️ **安全稳定**：基于 Xray 核心，提供稳定的网络连接
+### 🆓 永久免费服务
 
-## 系统要求
+- **永久免费**：无需付费即可享受服务
+- **200GB 流量**：每个用户每月可获得高达 200GB 的代理节点流量配额
+- **国内 IPv6 直连**：支持添加中国 IPv6 地址到白名单，实现国内直连使用
 
-- 操作系统：Ubuntu 20.04+、Debian 10+、CentOS 7+ 或其他主流 Linux 发行版
-- 服务器具有公网 IPv4 地址
-- 服务器防火墙允许出站流量
-- 具备基本的 Linux 命令行操作能力
+### 🌍 全球节点覆盖
 
-## 安装步骤
+- **100+ 地区覆盖**：节点遍布全球，当前有 50 个地区在线可用
+- **流媒体解锁**：支持 Netflix、Disney+、HBO 等流媒体服务
+- **AI 服务支持**：轻松访问 ChatGPT、Claude 等 AI 服务
 
-### 第一步：添加服务器到白名单
+### 🛠️ 技术特性
 
-1. 登录 ICMP9.COM 用户中心
-2. 点击左侧导航菜单的「放行管理」
-3. 在 IPv4 白名单页面，点击「添加白名单」按钮
-4. 输入您的服务器公网 IPv4 地址（格式：xxx.xxx.xxx.xxx）
-5. 填写备注信息，例如：美国-洛杉矶-服务器1
-6. 点击提交，等待系统审核通过（通常立即生效）
+- **VMess 协议**：基于 VMess 协议的安全代理
+- **Cloudflare 转发**：通过 Cloudflare 提供稳定连接
+- **双模式支持**：TUN 网卡模式和全局代理模式
+- **多系统支持**：支持 Alpine Linux、Debian、Ubuntu 等主流发行版
 
-### 第二步：在服务器上安装客户端
+## 📁 项目结构
 
-使用 SSH 连接到您的服务器，执行以下命令：
+```
+icmp9/
+├── 脚本文件
+│   ├── icmp9.sh                   # 主要安装脚本
+│   ├── 链接生成器.js                # 订阅链接生成器
+│   ├── whitelist-auto-manager.js   # 白名单自动管理工具
+│   └── generate-xray-config.mjs    # Xray 配置生成器
+├── API 相关
+│   ├── icmp9-api.js               # API 客户端
+│   ├── icmp9-api-example.js       # API 使用示例
+│   └── ICMP9-API-README.md        # API 文档
+├── 配置文件
+│   ├── xray-config-template.json   # Xray 配置模板
+│   ├── config.txt                  # 配置文件
+│   └── online.json                 # 在线节点信息
+├── 工具脚本
+│   ├── diagnose-cookie.js          # Cookie 诊断工具
+│   ├── test-cookie.js             # Cookie 测试工具
+│   ├── ipv6-info.js               # IPv6 信息查询
+│   └── sha256.js                  # SHA256 计算工具
+└── 文档
+    ├── 使用说明.md                 # 详细使用说明
+    ├── 脚本详细说明.md             # 脚本技术文档
+    ├── README-whitelist-manager.md # 白名单管理器文档
+    └── 网络切换工具.md             # 网络切换指南
+```
+
+## 🚀 快速开始
+
+### 方法一：一键安装（推荐）
+
+在您的海外 VPS 上执行以下命令：
 
 ```bash
-# 一键安装脚本
 bash <(curl -L -s api.icmp9.com/icmp9.sh)
 ```
 
-注意：需要 root 权限，非 root 用户请使用 sudo。
+安装完成后，使用 `icmp9` 命令进行管理：
 
-### 第三步：按照安装向导操作
+```bash
+icmp9
+```
 
-安装脚本会引导您完成以下配置：
+### 方法二：使用本工具包
 
-1. 选择代理模式（TUN 网卡模式或全局代理模式）
-2. 输入 API Key（从用户中心首页复制您的 API Key）
-3. 选择节点地区（脚本会自动检测您的服务器位置，或让您手动选择）
-4. 配置隧道参数（保持默认配置即可，高级用户可自定义端口和协议）
-5. 启动服务（安装完成后服务会自动启动并设置开机自启）
+1. 克隆本仓库：
 
-### 第四步：验证连接
+```bash
+git clone https://gitlab.com/masx200/icmp9.git
+cd icmp9
+```
 
-安装完成后，您可以通过以下方式验证：
+2. 安装依赖：
 
-1. 在用户中心查看节点是否显示为「在线」状态
-2. 检查流量统计是否正常更新
-3. 尝试通过节点访问目标服务，确认功能正常
+```bash
+npm install
+```
 
-## 使用方法
+3. 生成订阅链接：
 
-### 主菜单功能
+```bash
+npm run generate
+```
 
-安装完成后，运行 `icmp9` 命令可以打开主菜单：
+4. 生成 Xray 配置：
 
-- **切换节点**：选择不同的国家/地区节点
-- **切换模式**：在 TUN 网卡模式和全局代理模式之间切换
-- **暂停/恢复服务**：临时停止或恢复代理服务
-- **重启服务**：重启代理服务
-- **测试连接**：测试当前代理连接是否正常
-- **卸载服务**：完全移除 ICMP9.COM 客户端
+```bash
+npm run build
+```
 
-### 代理模式说明
+## 📋 系统要求
 
-#### TUN 网卡模式
+### 硬件要求
 
-- 创建名为 `other` 的虚拟网卡
-- 适用于纯 IPv6 环境
-- 通过 TUN 网卡路由所有流量
+- 内存：至少 128MB
+- 磁盘：至少 50MB 可用空间
+- 网络：稳定的互联网连接
 
-#### 全局代理模式
+### 软件要求
 
-- 使用 iptables 透明代理
-- 适用于常规 IPv4 环境
-- 通过 NAT 规则重定向流量
+- **操作系统**：Alpine Linux 3.15+、Debian 10+、Ubuntu 20.04+、CentOS 7+
+- **权限**：Root 权限或 sudo 权限
+- **网络**：公网 IPv4 地址（用于添加到白名单）
 
-## 常见问题
+## ⚙️ 配置说明
 
-### Q: 安装失败怎么办？
+### 白名单配置
 
-A: 请检查服务器系统版本、网络连接，确保 IPv4
-地址已添加到白名单。如仍失败，请联系客服。
+1. 访问 [用户仪表盘](https://icmp9.com/user/dashboard)
+2. 进入 **放行管理** → **IPv4 白名单**
+3. 添加您的 VPS 公网 IPv4 地址
+4. 如需 IPv6 直连，在对应页面添加 IPv6 地址
 
-### Q: 节点显示离线？
+> ⚠️ **注意**：白名单不支持添加国内 IPv4 地址和 Cloudflare WARP IP
 
-A: 检查服务器防火墙设置，确保服务正在运行（`systemctl status icmp9-xray` 或
-`rc-service icmp9-xray status`）。
+### API Key 获取
 
-### Q: 如何卸载客户端？
+1. 登录 [icmp9.com](https://icmp9.com)
+2. 在用户中心首页复制 API Key
+3. 在配置文件或脚本中使用该 API Key
 
-A: 运行 `icmp9` 命令，选择「卸载服务」选项即可。
+## 🛠️ NPM 脚本命令
 
-### Q: 如何切换到其他节点？
+| 命令                             | 说明                 |
+| -------------------------------- | -------------------- |
+| `npm run start`                  | 启动链接生成器       |
+| `npm run generate`               | 生成订阅链接         |
+| `npm run build`                  | 生成 Xray 配置       |
+| `npm run convert`                | 转换配置格式         |
+| `npm run whitelist-auto-manager` | 运行白名单自动管理器 |
+| `npm run test:xray`              | 测试 Xray 配置       |
+| `npm run test:xray:verbose`      | 详细测试 Xray 配置   |
+| `npm run test:all`               | 运行完整测试流程     |
 
-A: 运行 `icmp9` 命令，选择「切换节点」选项，然后从列表中选择新的节点。
+## 📚 API 使用
 
-### Q: 如何在 TUN 模式和全局代理模式之间切换？
+### 安装和初始化
 
-A: 运行 `icmp9` 命令，选择「切换模式」选项，然后选择您需要的模式。
+```javascript
+import { Icmp9API } from "./icmp9-api.js";
 
-## 支持的节点
+const api = new Icmp9API();
 
-当前支持 107 个地区的网络节点，其中 50 个地区已上线：
+// 设置 Cookie（如果需要）
+api.setCookie("your_cookie_here");
+```
 
-### 已上线地区
+### 获取用户信息
 
-| 地区         | 代码 | 状态 |
-| ------------ | ---- | ---- |
-| 孟加拉国     | BD   | 在线 |
-| 文莱         | BN   | 在线 |
-| 不丹         | BT   | 在线 |
-| 香港         | HK   | 在线 |
-| 印度         | IN   | 在线 |
-| 日本         | JP   | 在线 |
-| 柬埔寨       | KH   | 在线 |
-| 韩国         | KR   | 在线 |
-| 哈萨克斯坦   | KZ   | 在线 |
-| 老挝         | LA   | 在线 |
-| 缅甸         | MM   | 在线 |
-| 蒙古         | MN   | 在线 |
-| 尼泊尔       | NP   | 在线 |
-| 菲律宾       | PH   | 在线 |
-| 巴基斯坦     | PK   | 在线 |
-| 泰国         | TH   | 在线 |
-| 塔吉克斯坦   | TJ   | 在线 |
-| 土库曼斯坦   | TM   | 在线 |
-| 台湾         | TW   | 在线 |
-| 乌兹别克斯坦 | UZ   | 在线 |
-| 越南         | VN   | 在线 |
-| 阿富汗       | AF   | 在线 |
-| 巴林         | BH   | 在线 |
-| 以色列       | IL   | 在线 |
-| 伊拉克       | IQ   | 在线 |
-| 约旦         | JO   | 在线 |
-| 科威特       | KW   | 在线 |
-| 卡塔尔       | QA   | 在线 |
-| 沙特阿拉伯   | SA   | 在线 |
-| 叙利亚       | SY   | 在线 |
-| 加拿大       | CA   | 在线 |
-| 哥斯达黎加   | CR   | 在线 |
-| 古巴         | CU   | 在线 |
-| 多米尼加     | DO   | 在线 |
-| 危地马拉     | GT   | 在线 |
-| 洪都拉斯     | HN   | 在线 |
-| 墨西哥       | MX   | 在线 |
-| 巴拿马       | PA   | 在线 |
-| 波多黎各     | PR   | 在线 |
-| 萨尔瓦多     | SV   | 在线 |
-| 美国         | US   | 在线 |
-| 澳大利亚     | AU   | 在线 |
-| 新西兰       | NZ   | 在线 |
-| 阿根廷       | AR   | 在线 |
-| 巴西         | BR   | 在线 |
-| 智利         | CL   | 在线 |
-| 哥伦比亚     | CO   | 在线 |
-| 厄瓜多尔     | EC   | 在线 |
-| 秘鲁         | PE   | 在线 |
-| 委内瑞拉     | VE   | 在线 |
+```javascript
+const userInfo = await api.getUserInfo();
+console.log(`用户名: ${userInfo.username}`);
+console.log(`API 密钥: ${userInfo.api_key}`);
+console.log(`流量配额: ${userInfo.traffic_quota} bytes`);
+```
 
-### 未上线地区
+### 白名单管理
 
-包括非洲、欧洲等地区的节点，正在陆续上线中。
+```javascript
+// 获取白名单配额
+const quota = await api.getWhitelistQuota();
 
-## 使用须知
+// 获取白名单 IP 列表
+const ipList = await api.getWhitelistIPs();
 
-- 请合理使用流量配额
-- 禁止用于任何违法活动
-- 仅供个人学习研究，禁止商业用途
-- 滥用将导致账户封禁
+// 添加新 IP
+await api.addWhitelistIP("192.168.1.1", "我的服务器");
 
-## 许可证
+// 删除 IP
+await api.deleteWhitelistIP("ip_id_here");
+```
 
-本项目采用 MIT 许可证 - 查看 [LICENSE](LICENSE) 文件了解详情。
+## 🔧 代理模式详解
 
-## 支持
+### TUN 网卡模式
 
-如有问题或建议，请通过 ICMP9.COM 用户中心联系客服。
+- **工作方式**：创建虚拟 TUN 网卡，修改路由表实现代理
+- **适用场景**：纯 IPv6 环境，兼容性要求高
+- **优点**：兼容性强，支持所有类型的 TCP/UDP 流量
+- **缺点**：性能略有损耗
+
+### 全局代理模式
+
+- **工作方式**：使用 iptables NAT 规则劫持 TCP 连接
+- **适用场景**：IPv4 环境，性能要求高
+- **优点**：性能高，内核层面处理
+- **缺点**：可能与防火墙规则冲突
+
+## 🐛 故障排除
+
+### 常见问题
+
+**1. 安装失败**
+
+- 检查系统版本是否支持
+- 确认拥有 root 权限
+- 检查网络连接和 API 访问
+- 确认 IP 已添加到白名单
+
+**2. 服务无法启动**
+
+```bash
+# 检查服务状态（Debian/Ubuntu）
+journalctl -u icmp9-xray -n 20
+
+# 检查服务状态（Alpine）
+cat /var/log/icmp9-xray.log
+```
+
+**3. 连接测试失败**
+
+- 确认节点在线状态
+- 检查防火墙设置
+- 尝试重启服务
+
+### 日志位置
+
+- **Debian/Ubuntu**：`journalctl -u icmp9-*`
+- **Alpine Linux**：`/var/log/icmp9-*.log`
+- **配置文件**：`/etc/icmp9/`
+
+## 🔒 安全注意事项
+
+- **仅供个人学习**：禁止商业用途
+- **合法使用**：禁止用于违法活动
+- **流量管理**：合理使用 200GB 免费配额
+- **账号安全**：妥善保管 API Key
+
+## 📖 相关文档
+
+- [详细使用说明](./使用说明.md) - 完整的使用教程
+- [脚本详细说明](./脚本详细说明.md) - icmp9.sh 技术文档
+- [API 文档](./ICMP9-API-README.md) - API 接口说明
+- [白名单管理器文档](./README-whitelist-manager.md) - 白名单自动化工具
+- [网络切换指南](./网络切换工具.md) - 网络模式切换说明
+
+## 🤝 贡献
+
+欢迎提交 Issue 和 Pull Request 来改进这个项目。
+
+## 📄 许可证
+
+本项目采用 [ISC License](./LICENSE) 许可证。
+
+## 🔗 相关链接
+
+- **官方网站**：[https://icmp9.com](https://icmp9.com)
+- **用户仪表盘**：[https://icmp9.com/user/dashboard](https://icmp9.com/user/dashboard)
+- **GitLab
+  仓库**：[https://gitlab.com/masx200/icmp9](https://gitlab.com/masx200/icmp9)
+- **问题反馈**：[https://gitlab.com/masx200/icmp9/issues](https://gitlab.com/masx200/icmp9/issues)
+
+---
+
+> **开发者信息**\
+> 版本：2.7\
+> 许可：MIT License\
+> 更新日期：2025-12-17
