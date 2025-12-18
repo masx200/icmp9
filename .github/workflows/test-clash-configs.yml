@@ -122,6 +122,7 @@ jobs:
             set +e
             if timeout 30 ./mihomo -t -f "$config" > "$temp_output" 2>&1; then
               echo "   ✅ 配置文件语法测试通过!"
+              exit 0
               ((success_count++))
               rm -f "$temp_output"
             else
