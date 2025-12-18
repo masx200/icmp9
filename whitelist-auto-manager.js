@@ -318,7 +318,7 @@ class WhitelistAutoManager {
         const mergedCookies = Object.fromEntries(
           Object.entries(Object.assign({}, existingCookies, newCookies)).filter(
             ([key, value]) =>
-              value !== undefined && key !== "expires" && key != "path",
+              value !== undefined && key.toLowerCase() !== "expires" && key.toLowerCase() != "path",
           ),
         );
         console.log(Object.fromEntries(Object.entries(mergedCookies)));
