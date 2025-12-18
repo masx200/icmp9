@@ -13,10 +13,13 @@
     "convert": "node generate-xray-config.mjs",
     "test:xray": "node scripts/test-xray-configs.js",
     "test:xray:verbose": "node scripts/test-xray-configs.js --verbose",
+    "test:clash": "node scripts/test-clash-configs.js",
+    "test:clash:syntax": "node scripts/test-clash-configs.js",
     "test:config": "npm run test:xray",
     "test:config:verbose": "npm run test:xray:verbose",
-    "test:all": "npm run build && npm run start && npm run test:config",
-    "test:all:verbose": "npm run build && npm run start && npm run test:config:verbose"
+    "test:all": "npm run build && npm run start && npm run test:config && npm run test:clash",
+    "test:all:verbose": "npm run build && npm run start && npm run test:config:verbose && npm run test:clash",
+    "validate:clash": "npm run test:clash"
   },
   "repository": {
     "type": "git",

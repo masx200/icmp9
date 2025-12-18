@@ -1,0 +1,176 @@
+name: Test Clash Configurations
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, master]
+    # paths:
+    #   - 'clash-output-consistenthashing.yaml'
+    #   - 'clash-config-template.yaml'
+    #   - '链接生成器.js'
+    #   - 'vmess-to-clash-converter.js'
+    #   - 'package.json'
+  pull_request:
+    branches: [main, master]
+    # paths:
+    #   - 'clash-output-consistenthashing.yaml'
+    #   - 'clash-config-template.yaml'
+    #   - '链接生成器.js'
+    #   - 'vmess-to-clash-converter.js'
+    #   - 'package.json'
+
+jobs:
+  test-clash-configs:
+    runs-on: ubuntu-latest
+    if: "!contains(github.event.head_commit.message, '🤖 Auto build')"
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Setup Deno
+        uses: denoland/setup-deno@v1
+        with:
+          deno-version: v2.x
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Format code
+        run: npm run format
+
+      - name: Generate configurations
+        run: npm run build
+
+      - name: Test Clash configurations with Node.js
+        run: |
+          echo "🔄 使用 Node.js 脚本测试 Clash 配置..."
+          npm run test:clash
+
+      - name: Download and install mihomo (clash core)
+        run: |
+          echo "📥 下载 mihomo (clash core)..."
+          # 使用官方的 mihomo 二进制文件
+          wget https://github.com/MetaCubeX/mihomo/releases/download/v1.19.17/mihomo-linux-amd64-v1.19.17.gz.gz -O mihomo.gz.gz
+
+          echo "📦 解压 mihomo..."
+          gunzip mihomo.gz.gz || gzip -d mihomo.gz.gz
+
+          echo "🔧 添加执行权限..."
+          chmod +x mihomo
+
+          echo "🔍 验证 mihomo..."
+          ./mihomo -v
+
+      - name: Test clash configurations
+        run: |
+          set -e
+
+          echo "🧪 开始测试 Clash 配置文件..."
+
+          # 检查可用的配置文件
+          echo "📋 检查可用的配置文件..."
+          available_configs=()
+
+          # 检查主要的 Clash 配置文件
+          if [ -f "clash-output-consistenthashing.yaml" ]; then
+            available_configs+=("clash-output-consistenthashing.yaml")
+            echo "   ✅ clash-output-consistenthashing.yaml"
+          fi
+
+          if [ -f "clash-config-template.yaml" ]; then
+            available_configs+=("clash-config-template.yaml")
+            echo "   ✅ clash-config-template.yaml"
+          fi
+
+          # 检查其他可能的 Clash 配置文件
+          for config in clash-output-*.yaml clash-output-*.yml; do
+            if [ -f "$config" ] && [[ ! " ${available_configs[@]} " =~ " ${config} " ]]; then
+              available_configs+=("$config")
+              echo "   ✅ $config"
+            fi
+          done
+
+          if [ ${#available_configs[@]} -eq 0 ]; then
+            echo "❌ 未找到任何 Clash 配置文件"
+            exit 1
+          fi
+
+          echo "✅ 找到 mihomo: $(pwd)/mihomo"
+
+          success_count=0
+          total_count=${#available_configs[@]}
+          failed_configs=()
+
+          # 测试每个实际存在的配置文件
+          for config in "${available_configs[@]}"; do
+            echo ""
+            echo "📋 测试文件: $config"
+            echo "   🧪 测试配置语法..."
+
+            # 创建临时文件来捕获测试结果
+            temp_output=$(mktemp)
+
+            # 执行 mihomo 测试命令，使用set +e临时禁用错误退出
+            set +e
+            if timeout 30 ./mihomo -t -f "$config" > "$temp_output" 2>&1; then
+              echo "   ✅ 配置文件语法测试通过!"
+              ((success_count++))
+              rm -f "$temp_output"
+            else
+              test_result=$?
+              echo "   ❌ 配置文件语法测试失败 (退出码: $test_result)"
+              failed_configs+=("$config")
+
+              # 显示详细错误信息（限制行数以避免输出过长）
+              echo "   🔍 详细错误信息："
+              head -20 "$temp_output" 2>/dev/null || echo "   无法获取详细错误信息"
+
+              # 检查是否是超时错误
+              if [ $test_result -eq 124 ]; then
+                echo "   ⏰ 测试超时（30秒）"
+              fi
+
+              rm -f "$temp_output"
+            fi
+            set -e  # 重新启用错误退出
+          done
+
+          echo ""
+          echo "📊 测试结果: $success_count/$total_count 个配置文件通过测试"
+
+          # 显示失败的配置文件
+          if [ ${#failed_configs[@]} -gt 0 ]; then
+            echo ""
+            echo "❌ 失败的配置文件："
+            for failed in "${failed_configs[@]}"; do
+              echo "   - $failed"
+            done
+          fi
+
+          if [ $success_count -eq $total_count ]; then
+            echo ""
+            echo "🎉 所有配置文件测试通过!"
+            echo "✅ Clash配置验证完成"
+          else
+            echo ""
+            echo "⚠️  部分配置文件测试失败"
+            echo "📝 请检查配置文件语法和结构"
+            echo "✅ Clash配置验证完成"
+            exit 1
+          fi
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: clash-test-results
+          path: |
+            *.yaml
+            *.yml
+          retention-days: 7

@@ -1,0 +1,77 @@
+name: Validate Clash Configurations
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, master]
+    # paths:
+    #   - '*.yaml'
+    #   - '*.yml'
+    #   - 'scripts/test-clash-configs.js'
+  pull_request:
+    branches: [main, master]
+    # paths:
+    #   - '*.yaml'
+    #   - '*.yml'
+    #   - 'scripts/test-clash-configs.js'
+
+jobs:
+  validate-clash:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Validate Clash configurations
+        run: |
+          echo "🧪 开始验证 Clash 配置文件..."
+          npm run test:clash
+
+      - name: Check if mihomo can parse configs
+        run: |
+          echo "📥 下载 mihomo 进行额外验证..."
+          wget https://github.com/MetaCubeX/mihomo/releases/download/v1.19.17/mihomo-linux-amd64-v1.19.17.gz.gz -O mihomo.gz.gz
+          gunzip mihomo.gz.gz || gzip -d mihomo.gz.gz
+          chmod +x mihomo
+
+          echo "🔍 使用 mihomo 验证配置文件..."
+
+          configs=()
+          if [ -f "clash-output-consistenthashing.yaml" ]; then
+            configs+=("clash-output-consistenthashing.yaml")
+          fi
+          if [ -f "clash-config-template.yaml" ]; then
+            configs+=("clash-config-template.yaml")
+          fi
+
+          success=0
+          total=${#configs[@]}
+
+          for config in "${configs[@]}"; do
+            echo "📋 测试: $config"
+            if timeout 30 ./mihomo -t -f "$config" > /dev/null 2>&1; then
+              echo "   ✅ mihomo 验证通过"
+              ((success++))
+            else
+              echo "   ❌ mihomo 验证失败"
+              ./mihomo -t -f "$config" | head -10
+            fi
+          done
+
+          echo "📊 mihomo 验证结果: $success/$total 个配置文件通过"
+
+          if [ $success -eq $total ]; then
+            echo "🎉 所有配置文件通过 mihomo 验证!"
+          else
+            echo "⚠️  部分配置文件未通过 mihomo 验证"
+            exit 1
+          fi
