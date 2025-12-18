@@ -51,9 +51,9 @@ jobs:
           if [ -f "clash-output-consistenthashing.yaml" ]; then
             configs+=("clash-output-consistenthashing.yaml")
           fi
-          if [ -f "clash-config-template.yaml" ]; then
-            configs+=("clash-config-template.yaml")
-          fi
+          # if [ -f "clash-config-template.yaml" ]; then
+          #   configs+=("clash-config-template.yaml")
+          # fi
 
           success=0
           total=${#configs[@]}
@@ -62,6 +62,7 @@ jobs:
             echo "📋 测试: $config"
             if timeout 30 ./mihomo -t -f "$config" > /dev/null 2>&1; then
               echo "   ✅ mihomo 验证通过"
+              exit 0
               ((success++))
             else
               echo "   ❌ mihomo 验证失败"

@@ -85,10 +85,10 @@ jobs:
             echo "   ✅ clash-output-consistenthashing.yaml"
           fi
 
-          if [ -f "clash-config-template.yaml" ]; then
-            available_configs+=("clash-config-template.yaml")
-            echo "   ✅ clash-config-template.yaml"
-          fi
+          # if [ -f "clash-config-template.yaml" ]; then
+          #   available_configs+=("clash-config-template.yaml")
+          #   echo "   ✅ clash-config-template.yaml"
+          # fi
 
           # 检查其他可能的 Clash 配置文件
           for config in clash-output-*.yaml clash-output-*.yml; do

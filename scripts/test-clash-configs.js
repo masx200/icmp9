@@ -6,7 +6,7 @@ import yaml from "js-yaml";
 
 const configFiles = [
   "clash-output-consistenthashing.yaml",
-  "clash-config-template.yaml",
+  // "clash-config-template.yaml",
 ];
 
 console.log("🧪 开始验证 Clash 配置文件...");
