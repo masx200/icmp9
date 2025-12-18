@@ -218,6 +218,10 @@ async function convertVmessToClash() {
         },
       ],
       rules: [
+        "DOMAIN,clash.razord.top,DIRECT",
+        "DOMAIN,yacd.haishan.me,DIRECT",
+        "RULE-SET,direct,DIRECT",
+
         // 'DOMAIN-KEYWORD,geosite-cn-redirect,DIRECT',
         "DOMAIN-SUFFIX,local,DIRECT",
         "DOMAIN-KEYWORD,github,🔀 负载均衡",
@@ -228,19 +232,30 @@ async function convertVmessToClash() {
         "RULE-SET,apple,DIRECT",
         "RULE-SET,google,🔀 负载均衡",
         // 'RULE-SET,netflix,🌍 国外媒体',
-        "RULE-SET,telegram,📲 电报信息",
+        "RULE-SET,telegramcidr,📲 电报信息",
         "RULE-SET,gfw,🔀 负载均衡",
+        "RULE-SET,tld-not-cn,🔀 负载均衡",
         "RULE-SET,GreatFirewall,🔀 负载均衡",
         "RULE-SET,proxy,🔀 负载均衡",
         "GEOIP,CN,DIRECT",
+        "RULE-SET,cncidr,DIRECT",
+        "RULE-SET,lancidr,DIRECT",
+        "GEOIP,LAN,DIRECT",
+
         "GEOIP,HK,🔀 负载均衡",
         "GEOIP,TW,🔀 负载均衡",
         "GEOIP,SG,🔀 负载均衡",
         "GEOIP,JP,🔀 负载均衡",
         "GEOIP,US,🔀 负载均衡",
-        "FINAL,🐟 漏网之鱼",
+        "MATCH,🐟 漏网之鱼",
       ],
       "rule-providers": {
+        lancidr: {
+          type: "http",
+          behavior: "ipcidr",
+          url:
+            "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/lancidr.txt",
+        },
         reject: {
           type: "http",
           behavior: "domain",
@@ -283,17 +298,20 @@ async function convertVmessToClash() {
           url:
             "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/private.txt",
         },
-        // 'netflix': {
-        //     'type': 'http',
-        //     'behavior': 'domain',
-        //     'url': 'https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/netflix.txt'
-        // },
-        telegram: {
+        telegramcidr: {
           type: "http",
-          behavior: "domain",
+          behavior: "ipcidr",
           url:
-            "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/telegram.txt",
+            "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/telegramcidr.txt",
         },
+
+        cncidr: {
+          type: "http",
+          behavior: "ipcidr",
+          url:
+            "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/cncidr.txt",
+        },
+
         gfw: {
           type: "http",
           behavior: "domain",
@@ -305,6 +323,12 @@ async function convertVmessToClash() {
           behavior: "domain",
           url:
             "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/gfw.txt",
+        },
+        "tld-not-cn": {
+          type: "http",
+          behavior: "domain",
+          url:
+            "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/tld-not-cn.txt",
         },
         applications: {
           type: "http",
