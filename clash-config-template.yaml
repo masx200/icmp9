@@ -151893,7 +151893,7 @@ proxy-groups:
     proxies:
       - 🔀 负载均衡
 rules:
-    - DOMAIN-SUFFIX,raw.githubusercontent.com,🔀 负载均衡
+  - DOMAIN-SUFFIX,raw.githubusercontent.com,🔀 负载均衡
   - DOMAIN-SUFFIX,papegames.com,DIRECT
   - DOMAIN-SUFFIX,addyoutube.com,DIRECT
   - DOMAIN-SUFFIX,gitee.com,DIRECT
