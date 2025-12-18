@@ -27,6 +27,10 @@ function decodeVmess(vmessUrl) {
  */
 function vmessToClashProxy(vmessConfig) {
   const proxy = {
+    "ech-opts": {
+      enable: true,
+    },
+    alpn: ["h2", "http/1.1", "h3"],
     name: vmessConfig.ps || `VMess-${vmessConfig.add}`,
     type: "vmess",
     server: vmessConfig.add,
