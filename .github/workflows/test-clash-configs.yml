@@ -60,6 +60,8 @@ jobs:
 
           echo "📦 解压 mihomo..."
           gunzip mihomo.gz.gz || gzip -d mihomo.gz.gz
+          
+          mv mihomo-linux-amd64 mihomo
 
           echo "🔧 添加执行权限..."
           chmod +x mihomo
