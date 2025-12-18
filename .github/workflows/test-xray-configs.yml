@@ -4,22 +4,22 @@ on:
   workflow_dispatch:
   push:
     branches: [main, master]
-    paths:
-      - "xray-config-template.json"
-      - "generate-xray-config.mjs"
-      - "链接生成器.js"
-      - "优选域名.js"
-      - "package.json"
-      - "scripts/test-xray-configs.js"
+    # paths:
+    #   - "xray-config-template.json"
+    #   - "generate-xray-config.mjs"
+    #   - "链接生成器.js"
+    #   - "优选域名.js"
+    #   - "package.json"
+    #   - "scripts/test-xray-configs.js"
   pull_request:
     branches: [main, master]
-    paths:
-      - "xray-config-template.json"
-      - "generate-xray-config.mjs"
-      - "链接生成器.js"
-      - "优选域名.js"
-      - "package.json"
-      - "scripts/test-xray-configs.js"
+    # paths:
+    #   - "xray-config-template.json"
+    #   - "generate-xray-config.mjs"
+    #   - "链接生成器.js"
+    #   - "优选域名.js"
+    #   - "package.json"
+    #   - "scripts/test-xray-configs.js"
 
 jobs:
   test-xray-configs:
