@@ -7,7 +7,7 @@
   "scripts": {
     "whitelist-auto-manager": "node whitelist-auto-manager.js",
     "format": "deno fmt",
-    "build": "echo 'Building icmp9 project...' && node generate-xray-config.mjs",
+    "build": "echo 'Building icmp9 project...' && node generate-xray-config.mjs && node 链接生成器.js && node vmess-to-clash-converter.js",
     "start": "echo 'Starting icmp9 project...' && node 链接生成器.js",
     "generate": "node 链接生成器.js",
     "convert": "node generate-xray-config.mjs",
@@ -32,6 +32,8 @@
   "dependencies": {
     "cookie": "^1.1.1",
     "ipify": "^7.0.0",
-    "undici": "^7.16.0"
+    "js-yaml": "^4.1.1",
+    "undici": "^7.16.0",
+    "yaml": "^2.8.2"
   }
 }
