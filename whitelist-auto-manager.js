@@ -39,22 +39,35 @@ class WhitelistAutoManager {
       // 使用IPv6InfoFetcher获取地址
       const ipInfo = await this.ipv6Fetcher.fetchIPInfo();
 
-      if (ipInfo && ipInfo.ip && ipInfo.ip !== "unknown" && ipInfo.isIPv6) {
-        this.currentIPv6 = ipInfo.ip;
-        console.log(`✅ 获取到IPv6地址: ${this.currentIPv6}`);
-        console.log(
-          `   位置: ${ipInfo.country || "未知"} (${
-            ipInfo.country_code || "未知"
-          })`,
-        );
-        console.log(
-          `   ASN: ${ipInfo.asn || "未知"} - ${
-            ipInfo.as_name || ipInfo.org || "未知"
-          }`,
-        );
-        return this.currentIPv6;
+      if (ipInfo && ipInfo.ip && ipInfo.ip !== "unknown") {
+        // 额外验证：确保IP包含冒号（IPv6特征）
+        const isActuallyIPv6 = ipInfo.ip.includes(":");
+
+        if (isActuallyIPv6) {
+          this.currentIPv6 = ipInfo.ip;
+          console.log(`✅ 获取到IPv6地址: ${this.currentIPv6}`);
+          console.log(
+            `   位置: ${ipInfo.country || "未知"} (${
+              ipInfo.country_code || "未知"
+            })`,
+          );
+          console.log(
+            `   ASN: ${ipInfo.asn || "未知"} - ${
+              ipInfo.as_name || ipInfo.org || "未知"
+            }`,
+          );
+          return this.currentIPv6;
+        } else {
+          console.log("❌ 获取的地址不是IPv6格式");
+          console.log(`   获取到的地址: ${ipInfo.ip}`);
+          return null;
+        }
       } else {
         console.log("❌ 未能获取到有效的IPv6地址");
+        if (ipInfo) {
+          console.log(`   IP: ${ipInfo.ip}`);
+          console.log(`   isIPv6: ${ipInfo.isIPv6}`);
+        }
         return null;
       }
     } catch (error) {

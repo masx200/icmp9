@@ -55,6 +55,7 @@ class IPv6InfoFetcher {
           continent_code: data.continent_code,
           continent: data.continent,
           source: "ipinfo.io",
+          isIPv6: true, // 明确设置为 true，因为我们已经验证了
         });
 
         console.log(`✅ ipinfo.io 获取IPv6成功: ${data.ip} (${data.country})`);
@@ -93,6 +94,7 @@ class IPv6InfoFetcher {
           as_name: data.asn_org,
           user_agent: data.user_agent,
           source: this.ipinfo.source === "unknown" ? "ifconfig.co" : "combined",
+          isIPv6: true, // 明确设置为 true，因为我们已经验证了
         });
 
         console.log(
@@ -139,6 +141,7 @@ class IPv6InfoFetcher {
           org: data.organization,
           continent_code: data.continent_code,
           source: this.ipinfo.source === "unknown" ? "api.ip.sb" : "combined",
+          isIPv6: true, // 明确设置为 true，因为我们已经验证了
         });
 
         console.log(`✅ api.ip.sb 获取IPv6成功: ${data.ip} (${data.country})`);
