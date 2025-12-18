@@ -27,11 +27,12 @@ function decodeVmess(vmessUrl) {
  */
 function vmessToClashProxy(vmessConfig) {
   const proxy = {
+     name: vmessConfig.ps || `VMess-${vmessConfig.add}`,
     "ech-opts": {
       enable: true,
     },
     alpn: ["h2", "http/1.1", "h3"],
-    name: vmessConfig.ps || `VMess-${vmessConfig.add}`,
+   
     type: "vmess",
     server: vmessConfig.add,
     port: parseInt(vmessConfig.port),
@@ -73,7 +74,7 @@ function vmessToClashProxy(vmessConfig) {
   if (vmessConfig.tls === "tls") {
     proxy.tls = true;
     if (vmessConfig.sni) {
-      proxy.sni = vmessConfig.sni;
+      proxy.servername = vmessConfig.sni;
     }
   }
 
