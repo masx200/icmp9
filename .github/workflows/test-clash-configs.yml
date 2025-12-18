@@ -56,7 +56,7 @@ jobs:
         run: |
           echo "📥 下载 mihomo (clash core)..."
           # 使用官方的 mihomo 二进制文件
-          wget https://github.com/MetaCubeX/mihomo/releases/download/v1.19.17/mihomo-linux-amd64-v1.19.17.gz.gz -O mihomo.gz.gz
+          wget https://github.com/MetaCubeX/mihomo/releases/download/v1.19.17/mihomo-linux-amd64-v1.19.17.gz -O mihomo.gz.gz
 
           echo "📦 解压 mihomo..."
           gunzip mihomo.gz.gz || gzip -d mihomo.gz.gz
