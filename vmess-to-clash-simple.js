@@ -214,6 +214,7 @@ include:
     console.log(`📖 使用说明已生成: README-clash.md`);
   } catch (error) {
     console.error("❌ 转换过程中发生错误:", error.message);
+    throw error;
     process.exit(1);
   }
 }

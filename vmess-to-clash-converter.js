@@ -27,12 +27,12 @@ function decodeVmess(vmessUrl) {
  */
 function vmessToClashProxy(vmessConfig) {
   const proxy = {
-     name: vmessConfig.ps || `VMess-${vmessConfig.add}`,
+    name: vmessConfig.ps || `VMess-${vmessConfig.add}`,
     "ech-opts": {
       enable: true,
     },
     alpn: ["h2", "http/1.1", "h3"],
-   
+
     type: "vmess",
     server: vmessConfig.add,
     port: parseInt(vmessConfig.port),
@@ -343,14 +343,22 @@ async function convertVmessToClash() {
         },
       },
     };
-
+    const clashconfigtemplate = yaml.parse(
+      await fs.promises.readFile("clash-config-template.yaml", "utf8"),
+    );
     // 输出 YAML 文件
-    const yamlStr = yaml.stringify(clashConfig, {
-      indent: 2,
-      lineWidth: 0,
-      minContentWidth: 0,
-      nullTo: "null",
-    });
+    const yamlStr = yaml.stringify(
+      Object.assign({}, clashconfigtemplate, {
+        proxies: clashConfig.proxies,
+        ["proxy-groups"]: clashConfig["proxy-groups"],
+      }),
+      {
+        indent: 2,
+        lineWidth: 0,
+        minContentWidth: 0,
+        nullTo: "null",
+      },
+    );
 
     fs.writeFileSync(outputFile, yamlStr, "utf8");
 
@@ -376,11 +384,13 @@ async function convertVmessToClash() {
     }
   } catch (error) {
     console.error("❌ 转换过程中发生错误:", error.message);
+    throw error;
     process.exit(1);
   }
 }
-
-// 运行转换
-console.log("🚀 VMess 到 Clash 配置转换器");
-console.log("=" * 40);
-convertVmessToClash();
+if (import.meta.main) {
+  // 运行转换
+  console.log("🚀 VMess 到 Clash 配置转换器");
+  console.log("=" * 40);
+  convertVmessToClash();
+}

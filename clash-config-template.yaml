@@ -10,7 +10,7 @@ bind-address: "*"
 lan-allowed-ips:
   - 0.0.0.0/0
   - ::/0
-lan-disallowed-ips: []  
+lan-disallowed-ips: []
 global-client-fingerprint: chrome
 authentication:
   - 10t8ehvzgth0fi8:gfqdrma93f9b1lu
