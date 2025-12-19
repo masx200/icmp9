@@ -47,8 +47,7 @@ graph LR
 export async function resolveDNS(
   domain,
   type = "AAAA",
-  resolverUrl =
-    "https://deno-dns-over-https-server.g18uibxgnb.de5.net",
+  resolverUrl = "https://deno-dns-over-https-server.g18uibxgnb.de5.net",
 ) {
   // 实现代码...
 }

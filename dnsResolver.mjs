@@ -14,7 +14,7 @@ export async function resolveDNS(
   domain,
   type = "AAAA",
   resolverUrl = "https://deno-dns-over-https-server.g18uibxgnb.de5.net",
-  dohforcedIP = "104.21.9.230"
+  dohforcedIP = "104.21.9.230",
 ) {
   // 1. 参数验证
   if (!domain || typeof domain !== "string") {
@@ -42,11 +42,10 @@ export async function resolveDNS(
       path: url.pathname || "/dns-query",
       port: url.port || 443,
       method: "POST",
-      dohforcedIP:
-        dohforcedIP ??
-        hostname === "deno-dns-over-https-server.g18uibxgnb.de5.net"
-          ? "104.21.9.230"
-          : undefined,
+      dohforcedIP: dohforcedIP ??
+          hostname === "deno-dns-over-https-server.g18uibxgnb.de5.net"
+        ? "104.21.9.230"
+        : undefined,
     });
 
     console.log(`✅ DNS 解析成功: ${domain}`);
@@ -82,7 +81,7 @@ if (import.meta.main) {
         console.log("\n📋 提取到的 Answer 记录:");
         result.answers.forEach((answer, index) => {
           console.log(
-            `  ${index + 1}. 数据: ${answer.data}, TTL: ${answer.ttl}秒`
+            `  ${index + 1}. 数据: ${answer.data}, TTL: ${answer.ttl}秒`,
           );
         });
       } else {

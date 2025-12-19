@@ -1,10 +1,7 @@
 #!/usr/bin/env node
 
-import { exec } from "child_process";
-import { promisify } from "util";
 import { resolveDNS } from "./dnsResolver.mjs";
-
-const execAsync = promisify(exec);
+import { httpClient } from "./undici-dns-agent.mjs";
 
 /**
  * 获取当前IPv6地址信息
@@ -21,13 +18,14 @@ class IPv6InfoFetcher {
   async lookupipv6(
     domain,
     type = "AAAA",
-    resolverUrl =
-      "https://deno-dns-over-https-server.g18uibxgnb.de5.net",
+    resolverUrl = "https://deno-dns-over-https-server.g18uibxgnb.de5.net",
   ) {
     try {
       const result = await resolveDNS(domain, type, resolverUrl);
-      if (result.Answer && result.Answer.length > 0) {
-        return result.Answer.map((answer) => answer.data);
+      // 兼容不同的DNS响应格式
+      const answers = result.Answer || result.answers || [];
+      if (answers.length > 0) {
+        return answers.map((answer) => answer.data);
       }
       return [];
     } catch (error) {
@@ -37,9 +35,9 @@ class IPv6InfoFetcher {
   }
 
   /**
-   * 获取域名的IPv6地址用于--connect-to参数
+   * 获取域名的IPv6地址用于强制DNS解析
    * @param {string} domain - 要解析的域名
-   * @returns {Promise<string>} 返回格式化的IPv6地址，用于--connect-to参数
+   * @returns {Promise<string>} 返回格式化的IPv6地址，用于强制DNS解析
    */
   async getIPv6ForConnectTo(domain) {
     try {
@@ -83,25 +81,31 @@ class IPv6InfoFetcher {
   }
 
   /**
-   * 使用 curl 调用 ipinfo.io API 获取IPv6地址
+   * 使用 undici fetch 调用 ipinfo.io API 获取IPv6地址
    */
   async fetchFromIPInfo() {
     try {
       console.log("正在从 ipinfo.io 获取IPv6信息...");
 
-      // 获取ipinfo.io的IPv6地址用于--connect-to
+      // 获取ipinfo.io的IPv6地址用于强制DNS解析
       const ipInfoIPv6 = await this.getIPv6ForConnectTo("api.ipinfo.io");
-      const connectToOption = ipInfoIPv6
-        ? `--connect-to api.ipinfo.io:443:${ipInfoIPv6}:443`
-        : "-6";
 
-      const curlCommand =
-        `curl -s https://api.ipinfo.io/lite/me -H "Authorization: Bearer e1d992dda9d73e" ${connectToOption}`;
-      console.log(`🔧 执行curl命令: ${curlCommand}`);
+      const url = "https://api.ipinfo.io/lite/me";
+      const options = {
+        headers: {
+          "Authorization": "Bearer e1d992dda9d73e",
+        },
+      };
 
-      const { stdout } = await execAsync(curlCommand);
+      // 如果解析到了IPv6地址，使用强制DNS解析
+      if (ipInfoIPv6) {
+        options.forcedDomain = "api.ipinfo.io";
+        options.forcedIP = ipInfoIPv6.replace(/[\[\]]/g, "");
+        console.log(`🔧 使用强制DNS解析: api.ipinfo.io -> ${options.forcedIP}`);
+      }
 
-      const data = JSON.parse(stdout);
+      console.log(`📡 发起HTTP请求: ${url}`);
+      const data = await httpClient.getJSON(url, options);
 
       // 验证是否为IPv6地址
       if (data.ip && this.isIPv6(data.ip)) {
@@ -132,24 +136,27 @@ class IPv6InfoFetcher {
   }
 
   /**
-   * 使用 curl 调用 ifconfig.co API 获取IPv6地址
+   * 使用 undici fetch 调用 ifconfig.co API 获取IPv6地址
    */
   async fetchFromIfConfig() {
     try {
       console.log("正在从 ifconfig.co 获取IPv6信息...");
 
-      // 获取ifconfig.co的IPv6地址用于--connect-to
+      // 获取ifconfig.co的IPv6地址用于强制DNS解析
       const ifConfigIPv6 = await this.getIPv6ForConnectTo("ifconfig.co");
-      const connectToOption = ifConfigIPv6
-        ? `--connect-to ifconfig.co:443:${ifConfigIPv6}:443`
-        : "-6";
 
-      const curlCommand = `curl -s https://ifconfig.co/json ${connectToOption}`;
-      console.log(`🔧 执行curl命令: ${curlCommand}`);
+      const url = "https://ifconfig.co/json";
+      const options = {};
 
-      const { stdout } = await execAsync(curlCommand);
+      // 如果解析到了IPv6地址，使用强制DNS解析
+      if (ifConfigIPv6) {
+        options.forcedDomain = "ifconfig.co";
+        options.forcedIP = ifConfigIPv6.replace(/[\[\]]/g, "");
+        console.log(`🔧 使用强制DNS解析: ifconfig.co -> ${options.forcedIP}`);
+      }
 
-      const data = JSON.parse(stdout);
+      console.log(`📡 发起HTTP请求: ${url}`);
+      const data = await httpClient.getJSON(url, options);
 
       // 验证是否为IPv6地址
       if (data.ip && this.isIPv6(data.ip)) {
@@ -183,25 +190,34 @@ class IPv6InfoFetcher {
   }
 
   /**
-   * 使用 curl 调用 api-ipv6.ip.sb API 获取IPv6地址
+   * 使用 undici fetch 调用 api-ipv6.ip.sb API 获取IPv6地址
    */
   async fetchFromIPSb() {
     try {
       console.log("正在从 api-ipv6.ip.sb 获取IPv6信息...");
 
-      // 获取api-ipv6.ip.sb的IPv6地址用于--connect-to
+      // 获取api-ipv6.ip.sb的IPv6地址用于强制DNS解析
       const apiSbIPv6 = await this.getIPv6ForConnectTo("api-ipv6.ip.sb");
-      const connectToOption = apiSbIPv6
-        ? `--connect-to api-ipv6.ip.sb:443:${apiSbIPv6}:443`
-        : "-6";
 
-      const curlCommand =
-        `curl -s "https://api-ipv6.ip.sb/geoip" -H "User-Agent:Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.113 Safari/537.36" ${connectToOption}`;
-      console.log(`🔧 执行curl命令: ${curlCommand}`);
+      const url = "https://api-ipv6.ip.sb/geoip";
+      const options = {
+        headers: {
+          "User-Agent":
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.113 Safari/537.36",
+        },
+      };
 
-      const { stdout } = await execAsync(curlCommand);
+      // 如果解析到了IPv6地址，使用强制DNS解析
+      if (apiSbIPv6) {
+        options.forcedDomain = "api-ipv6.ip.sb";
+        options.forcedIP = apiSbIPv6.replace(/[\[\]]/g, "");
+        console.log(
+          `🔧 使用强制DNS解析: api-ipv6.ip.sb -> ${options.forcedIP}`,
+        );
+      }
 
-      const data = JSON.parse(stdout);
+      console.log(`📡 发起HTTP请求: ${url}`);
+      const data = await httpClient.getJSON(url, options);
 
       // 验证是否为IPv6地址
       if (data.ip && this.isIPv6(data.ip)) {
@@ -241,25 +257,34 @@ class IPv6InfoFetcher {
   }
 
   /**
-   * 使用 curl 调用 ipv6.ipleak.net API 获取IPv6地址
+   * 使用 undici fetch 调用 ipv6.ipleak.net API 获取IPv6地址
    */
   async fetchFromIPLeak() {
     try {
       console.log("正在从 ipv6.ipleak.net 获取IPv6信息...");
 
-      // 获取ipv6.ipleak.net的IPv6地址用于--connect-to
+      // 获取ipv6.ipleak.net的IPv6地址用于强制DNS解析
       const ipLeakIPv6 = await this.getIPv6ForConnectTo("ipv6.ipleak.net");
-      const connectToOption = ipLeakIPv6
-        ? `--connect-to ipv6.ipleak.net:443:${ipLeakIPv6}:443`
-        : "-6";
 
-      const curlCommand =
-        `curl -s "https://ipv6.ipleak.net/?mode=json" -H "User-Agent:Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.113 Safari/537.36" ${connectToOption}`;
-      console.log(`🔧 执行curl命令: ${curlCommand}`);
+      const url = "https://ipv6.ipleak.net/?mode=json";
+      const options = {
+        headers: {
+          "User-Agent":
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.113 Safari/537.36",
+        },
+      };
 
-      const { stdout } = await execAsync(curlCommand);
+      // 如果解析到了IPv6地址，使用强制DNS解析
+      if (ipLeakIPv6) {
+        options.forcedDomain = "ipv6.ipleak.net";
+        options.forcedIP = ipLeakIPv6.replace(/[\[\]]/g, "");
+        console.log(
+          `🔧 使用强制DNS解析: ipv6.ipleak.net -> ${options.forcedIP}`,
+        );
+      }
 
-      const data = JSON.parse(stdout);
+      console.log(`📡 发起HTTP请求: ${url}`);
+      const data = await httpClient.getJSON(url, options);
 
       // 验证是否为IPv6地址
       if (data.ip && this.isIPv6(data.ip)) {
@@ -301,33 +326,40 @@ class IPv6InfoFetcher {
   }
 
   /**
-   * 使用 curl 调用 6.ipshudi.com API 获取IPv6地址
+   * 使用 undici fetch 调用 6.ipshudi.com API 获取IPv6地址
    */
   async fetchFromIPshudi() {
     try {
       console.log("正在从 6.ipshudi.com 获取IPv6信息...");
 
-      // 获取6.ipshudi.com的IPv6地址用于--connect-to
+      // 获取6.ipshudi.com的IPv6地址用于强制DNS解析
       const ipshudiIPv6 = await this.getIPv6ForConnectTo("6.ipshudi.com");
-      const connectToOption = ipshudiIPv6
-        ? `--connect-to 6.ipshudi.com:443:${ipshudiIPv6}:443`
-        : "-6";
 
-      const curlCommand = `curl -s "https://6.ipshudi.com/" ` +
-        '-H "accept: application/json, text/javascript, */*; q=0.01" ' +
-        '-H "accept-language: zh-CN,zh;q=0.9,en;q=0.8" ' +
-        '-H "sec-ch-ua: \\"Google Chrome\\";v=\\"143\\", \\"Chromium\\";v=\\"143\\", \\"Not A(Brand\\";v=\\"24\\"" ' +
-        '-H "sec-ch-ua-mobile: ?0" ' +
-        '-H "sec-ch-ua-platform: \\"Windows\\"" ' +
-        '-H "sec-fetch-dest: empty" ' +
-        '-H "sec-fetch-mode: cors" ' +
-        '-H "sec-fetch-site: same-site" ' +
-        `-H "Referer: https://www.ipshudi.com/" ${connectToOption}`;
-      console.log(`🔧 执行curl命令: ${curlCommand}`);
+      const url = "https://6.ipshudi.com/";
+      const options = {
+        headers: {
+          "accept": "application/json, text/javascript, */*; q=0.01",
+          "accept-language": "zh-CN,zh;q=0.9,en;q=0.8",
+          "sec-ch-ua":
+            '"Google Chrome";v="143", "Chromium";v="143", "Not A(Brand";v="24"',
+          "sec-ch-ua-mobile": "?0",
+          "sec-ch-ua-platform": '"Windows"',
+          "sec-fetch-dest": "empty",
+          "sec-fetch-mode": "cors",
+          "sec-fetch-site": "same-site",
+          "Referer": "https://www.ipshudi.com/",
+        },
+      };
 
-      const { stdout } = await execAsync(curlCommand);
+      // 如果解析到了IPv6地址，使用强制DNS解析
+      if (ipshudiIPv6) {
+        options.forcedDomain = "6.ipshudi.com";
+        options.forcedIP = ipshudiIPv6.replace(/[\[\]]/g, "");
+        console.log(`🔧 使用强制DNS解析: 6.ipshudi.com -> ${options.forcedIP}`);
+      }
 
-      const data = JSON.parse(stdout);
+      console.log(`📡 发起HTTP请求: ${url}`);
+      const data = await httpClient.getJSON(url, options);
 
       // 验证响应状态和IPv6地址
       if (
@@ -360,25 +392,34 @@ class IPv6InfoFetcher {
   }
 
   /**
-   * 使用 curl 调用 api6.ipify.org API 获取IPv6地址
+   * 使用 undici fetch 调用 api6.ipify.org API 获取IPv6地址
    */
   async fetchFromIPify() {
     try {
       console.log("正在从 api6.ipify.org 获取IPv6信息...");
 
-      // 获取api6.ipify.org的IPv6地址用于--connect-to
+      // 获取api6.ipify.org的IPv6地址用于强制DNS解析
       const ipifyIPv6 = await this.getIPv6ForConnectTo("api6.ipify.org");
-      const connectToOption = ipifyIPv6
-        ? `--connect-to api6.ipify.org:443:${ipifyIPv6}:443`
-        : "-6";
 
-      const curlCommand =
-        `curl -s "https://api6.ipify.org/?format=json" -H "User-Agent:Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.113 Safari/537.36" ${connectToOption}`;
-      console.log(`🔧 执行curl命令: ${curlCommand}`);
+      const url = "https://api6.ipify.org/?format=json";
+      const options = {
+        headers: {
+          "User-Agent":
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.113 Safari/537.36",
+        },
+      };
 
-      const { stdout } = await execAsync(curlCommand);
+      // 如果解析到了IPv6地址，使用强制DNS解析
+      if (ipifyIPv6) {
+        options.forcedDomain = "api6.ipify.org";
+        options.forcedIP = ipifyIPv6.replace(/[\[\]]/g, "");
+        console.log(
+          `🔧 使用强制DNS解析: api6.ipify.org -> ${options.forcedIP}`,
+        );
+      }
 
-      const data = JSON.parse(stdout);
+      console.log(`📡 发起HTTP请求: ${url}`);
+      const data = await httpClient.getJSON(url, options);
 
       // 验证是否为IPv6地址
       if (data.ip && this.isIPv6(data.ip)) {

@@ -139,8 +139,7 @@ export async function resolveDNS(domain, type = "AAAA", resolverUrl) {
 当前的实现通过反向代理服务实现 DoH 服务器的强制访问：
 
 ```javascript
-const resolverUrl =
-  "https://deno-dns-over-https-server.g18uibxgnb.de5.net";
+const resolverUrl = "https://deno-dns-over-https-server.g18uibxgnb.de5.net";
 ```
 
 **URL 结构分析：**
@@ -155,20 +154,17 @@ https://[代理服务器]/token/[认证令牌]/https://[DoH服务器地址]/[API
 const DOH_SERVERS = [
   {
     name: "Google DNS",
-    url:
-      "https://deno-dns-over-https-server.g18uibxgnb.de5.net",
+    url: "https://deno-dns-over-https-server.g18uibxgnb.de5.net",
     priority: 1,
   },
   {
     name: "Cloudflare DNS",
-    url:
-      "https://deno-dns-over-https-server.g18uibxgnb.de5.net",
+    url: "https://deno-dns-over-https-server.g18uibxgnb.de5.net",
     priority: 2,
   },
   {
     name: "Quad9 DNS",
-    url:
-      "https://deno-dns-over-https-server.g18uibxgnb.de5.net",
+    url: "https://deno-dns-over-https-server.g18uibxgnb.de5.net",
     priority: 3,
   },
 ];

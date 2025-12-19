@@ -53,8 +53,7 @@ function createCustomAgent(hostname) {
 export async function resolveDNS(
   domain,
   type = "AAAA",
-  resolverUrl =
-    "https://deno-dns-over-https-server.g18uibxgnb.de5.net",
+  resolverUrl = "https://deno-dns-over-https-server.g18uibxgnb.de5.net",
 ) {
   // 1. 参数验证
   if (!domain || typeof domain !== "string") {
