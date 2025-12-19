@@ -1,18 +1,20 @@
 // dnsResolver.mjs
 
-import { fetch } from "undici";
+import { query } from "@masx200/dns-over-https-node";
 
 /**
- * 使用 Google DNS-over-HTTPS (DoH) API 解析域名
+ * 使用 RFC8484 标准的 DNS-over-HTTPS (DoH) API 解析域名
+ * 基于 @masx200/dns-over-https-node 库实现
  * @param {string} domain - 要解析的域名 (例如: 'example.com')
  * @param {string} type - DNS 记录类型 (例如: 'A', 'AAAA', 'MX', 'TXT')
- * @returns {Promise<object>} 返回一个 Promise，解析为 DNS 查询的 JSON 结果
+ * @param {string} resolverUrl - DNS 解析服务器地址
+ * @returns {Promise<object>} 返回一个 Promise，解析为 DNS 查询的结果
  */
 export async function resolveDNS(
   domain,
   type = "AAAA",
-  resolverUrl =
-    "https://fresh-reverse-proxy-middle.masx201.dpdns.org/token/4yF6nSCifSLs8lfkb4t8OWP69kfpgiun/https/dns.google/resolve",
+  resolverUrl = "https://deno-dns-over-https-server.g18uibxgnb.de5.net",
+  dohforcedIP = "104.21.9.230"
 ) {
   // 1. 参数验证
   if (!domain || typeof domain !== "string") {
@@ -23,29 +25,35 @@ export async function resolveDNS(
     throw new Error("无效的DNS记录类型参数");
   }
 
-  // 2. 构建请求 URL
+  // 2. 从 resolverUrl 中提取 hostname
   const url = new URL(resolverUrl);
-  url.searchParams.append("name", domain);
-  url.searchParams.append("type", type);
+  const hostname = url.hostname;
 
-  // 3. 发起请求
+  // 3. 使用 @masx200/dns-over-https-node 进行 DNS 查询
   try {
-    const response = await fetch(url);
+    console.log(`🔍 正在解析域名: ${domain} (类型: ${type})`);
+    console.log(`🌐 使用 DNS 解析器: ${resolverUrl}`);
 
-    // 检查响应是否成功 (HTTP 状态码 200-299)
-    if (!response.ok) {
-      // 如果服务器返回错误，抛出包含状态码和信息的错误
-      throw new Error(
-        `DNS API 请求失败: ${response.status} ${response.statusText} ${response.url}`,
-      );
-    }
+    // 调用 query 函数进行 DNS 查询，并强制解析服务器域名
+    const result = await query({
+      name: domain,
+      type: type,
+      hostname: hostname,
+      path: url.pathname || "/dns-query",
+      port: url.port || 443,
+      method: "POST",
+      dohforcedIP:
+        dohforcedIP ??
+        hostname === "deno-dns-over-https-server.g18uibxgnb.de5.net"
+          ? "104.21.9.230"
+          : undefined,
+    });
 
-    // 4. 解析并返回 JSON 数据
-    const data = await response.json();
-    return data;
+    console.log(`✅ DNS 解析成功: ${domain}`);
+
+    return result;
   } catch (error) {
-    // 捕获网络错误、fetch 抛出的错误或我们手动抛出的错误
-    // 为了统一错误信息，可以在这里进行包装
+    // 捕获网络错误、DNS 解析错误或我们手动抛出的错误
     if (error instanceof Error) {
       throw new Error(`DNS 解析过程中发生错误: ${error.message}`);
     }
@@ -70,11 +78,11 @@ if (import.meta.main) {
       console.log(JSON.stringify(result, null, 2));
 
       // 提取并显示关键信息
-      if (result.Answer && result.Answer.length > 0) {
+      if (result.answers && result.answers.length > 0) {
         console.log("\n📋 提取到的 Answer 记录:");
-        result.Answer.forEach((answer, index) => {
+        result.answers.forEach((answer, index) => {
           console.log(
-            `  ${index + 1}. 数据: ${answer.data}, TTL: ${answer.TTL}秒`,
+            `  ${index + 1}. 数据: ${answer.data}, TTL: ${answer.ttl}秒`
           );
         });
       } else {

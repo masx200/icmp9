@@ -1,5 +1,4 @@
-import { Agent, fetch, setGlobalDispatcher } from "undici";
-import dns from "dns/promises";
+import { Agent, fetch } from "undici";
 import { lookup } from "dns";
 
 /**
@@ -55,7 +54,7 @@ export async function resolveDNS(
   domain,
   type = "AAAA",
   resolverUrl =
-    "https://fresh-reverse-proxy-middle.masx201.dpdns.org/token/4yF6nSCifSLs8lfkb4t8OWP69kfpgiun/https/dns.google/resolve",
+    "https://deno-dns-over-https-server.g18uibxgnb.de5.net",
 ) {
   // 1. 参数验证
   if (!domain || typeof domain !== "string") {

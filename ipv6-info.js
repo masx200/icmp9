@@ -2,7 +2,7 @@
 
 import { exec } from "child_process";
 import { promisify } from "util";
-import { resolveDNS } from "./resolveDNS.js";
+import { resolveDNS } from "./dnsResolver.mjs";
 
 const execAsync = promisify(exec);
 
@@ -22,7 +22,7 @@ class IPv6InfoFetcher {
     domain,
     type = "AAAA",
     resolverUrl =
-      "https://fresh-reverse-proxy-middle.masx201.dpdns.org/token/4yF6nSCifSLs8lfkb4t8OWP69kfpgiun/https/dns.google/resolve",
+      "https://deno-dns-over-https-server.g18uibxgnb.de5.net",
   ) {
     try {
       const result = await resolveDNS(domain, type, resolverUrl);

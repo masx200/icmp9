@@ -33,6 +33,7 @@
   },
   "homepage": "https://gitlab.com/masx200/icmp9#readme",
   "dependencies": {
+    "@masx200/dns-over-https-node": "^1.0.0",
     "@types/node": "^25.0.3",
     "cookie": "^1.1.1",
     "ipify": "^7.0.0",

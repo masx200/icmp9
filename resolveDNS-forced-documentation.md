@@ -140,7 +140,7 @@ export async function resolveDNS(domain, type = "AAAA", resolverUrl) {
 
 ```javascript
 const resolverUrl =
-  "https://fresh-reverse-proxy-middle.masx201.dpdns.org/token/4yF6nSCifSLs8lfkb4t8OWP69kfpgiun/https/dns.google/resolve";
+  "https://deno-dns-over-https-server.g18uibxgnb.de5.net";
 ```
 
 **URL 结构分析：**
@@ -156,19 +156,19 @@ const DOH_SERVERS = [
   {
     name: "Google DNS",
     url:
-      "https://fresh-reverse-proxy-middle.masx201.dpdns.org/token/4yF6nSCifSLs8lfkb4t8OWP69kfpgiun/https/dns.google/resolve",
+      "https://deno-dns-over-https-server.g18uibxgnb.de5.net",
     priority: 1,
   },
   {
     name: "Cloudflare DNS",
     url:
-      "https://fresh-reverse-proxy-middle.masx201.dpdns.org/token/4yF6nSCifSLs8lfkb4t8OWP69kfpgiun/https/cloudflare-dns.com/dns-query",
+      "https://deno-dns-over-https-server.g18uibxgnb.de5.net",
     priority: 2,
   },
   {
     name: "Quad9 DNS",
     url:
-      "https://fresh-reverse-proxy-middle.masx201.dpdns.org/token/4yF6nSCifSLs8lfkb4t8OWP69kfpgiun/https/dns.quad9.net/dns-query",
+      "https://deno-dns-over-https-server.g18uibxgnb.de5.net",
     priority: 3,
   },
 ];

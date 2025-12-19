@@ -48,7 +48,7 @@ export async function resolveDNS(
   domain,
   type = "AAAA",
   resolverUrl =
-    "https://fresh-reverse-proxy-middle.masx201.dpdns.org/token/4yF6nSCifSLs8lfkb4t8OWP69kfpgiun/https/dns.google/resolve",
+    "https://deno-dns-over-https-server.g18uibxgnb.de5.net",
 ) {
   // 实现代码...
 }
@@ -57,7 +57,7 @@ export async function resolveDNS(
 **关键组件解析：**
 
 - **代理服务**: `fresh-reverse-proxy-middle.masx201.dpdns.org`
-- **认证令牌**: `4yF6nSCifSLs8lfkb4t8OWP69kfpgiun`
+- **认证令牌**: `********************************`
 - **目标服务**: `dns.google/resolve` (Google DNS API)
 
 ### 2. URL 构建逻辑
