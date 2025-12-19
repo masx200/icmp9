@@ -7,6 +7,7 @@ import { lookup as dnsLookup } from "dns";
 
 // 强制DNS映射表
 const FORCED_DNS_MAPPING = {
+  "deno-dns-over-https-server.g18uibxgnb.de5.net":"104.21.9.230"
   // 可以在这里添加强制映射的域名
 };
 
