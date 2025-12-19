@@ -33,6 +33,7 @@
   },
   "homepage": "https://gitlab.com/masx200/icmp9#readme",
   "dependencies": {
+    "@types/node": "^25.0.3",
     "cookie": "^1.1.1",
     "ipify": "^7.0.0",
     "js-yaml": "^4.1.1",

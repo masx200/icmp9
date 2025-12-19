@@ -7,7 +7,7 @@ import { lookup } from "dns";
  * 特定域名强制解析到指定IP地址
  */
 const FORCED_DNS_MAPPING = {
-  "fresh-reverse-proxy-middle.masx201.dpdns.org": "172.67.161.98"
+  "fresh-reverse-proxy-middle.masx201.dpdns.org": "104.21.9.230"
 };
 
 /**
@@ -19,26 +19,26 @@ const FORCED_DNS_MAPPING = {
 function createCustomAgent(hostname) {
   return new Agent({
     connect: {
-      // 使用异步lookup函数
-      lookup: async (hostname, options) => {
+      // 使用标准的callback风格的lookup函数
+      lookup: (hostname, options, callback) => {
         console.log(`🔍 正在解析: ${hostname}`);
-        
+
         // 检查是否在强制映射表中
         if (FORCED_DNS_MAPPING[hostname]) {
           const forcedIP = FORCED_DNS_MAPPING[hostname];
           console.log(`🔒 强制DNS解析: ${hostname} -> ${forcedIP}`);
-          return { address: forcedIP, family: 4 };
+
+          // 根据Node.js dns.LookupOptions的格式返回
+          // 可以返回单个地址或地址数组
+          if (options && options.all) {
+            return callback(null, [{ address: forcedIP, family: 4 }]);
+          } else {
+            return callback(null, forcedIP, 4);
+          }
         }
 
-        // 对于其他域名，使用正常DNS解析
-        try {
-          const result = await dns.lookup(hostname, { family: 4 });
-          console.log(`🌐 标准DNS解析: ${hostname} -> ${result.address}`);
-          return { address: result.address, family: result.family };
-        } catch (error) {
-          console.error(`❌ DNS解析失败: ${hostname} - ${error.message}`);
-          throw error;
-        }
+        // 对于其他域名，使用标准DNS解析
+        lookup(hostname, options, callback);
       }
     }
   });
