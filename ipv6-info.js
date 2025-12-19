@@ -4,12 +4,15 @@ import { exec } from "child_process";
 import { promisify } from "util";
 
 const execAsync = promisify(exec);
-
+import { fetch } from "undici";
 /**
  * 获取当前IPv6地址信息
  * 使用多个API服务获取IP地理位置信息
  */
 class IPv6InfoFetcher {
+  async lookupipv6(domain,type="AAAA", resolverUrl = "https://fresh-reverse-proxy-middle.masx201.dpdns.org/token/4yF6nSCifSLs8lfkb4t8OWP69kfpgiun/https/dns.google/resolve")/* : Promise<Array<string>>  */{
+    return [];
+  }
   constructor() {
     this.ipinfo = {
       ip: null,
@@ -38,7 +41,7 @@ class IPv6InfoFetcher {
     try {
       console.log("正在从 ipinfo.io 获取IPv6信息...");
       const { stdout } = await execAsync(
-        'curl -s https://api.ipinfo.io/lite/me -H "Authorization: Bearer e1d992dda9d73e" -6',
+        'curl -s https://api.ipinfo.io/lite/me -H "Authorization: Bearer e1d992dda9d73e" -6 --connect-to api.ipinfo.io:443:[2600:1901:0:13e0::]:443'
       );
 
       const data = JSON.parse(stdout);
@@ -77,7 +80,9 @@ class IPv6InfoFetcher {
   async fetchFromIfConfig() {
     try {
       console.log("正在从 ifconfig.co 获取IPv6信息...");
-      const { stdout } = await execAsync("curl -s https://ifconfig.co/json -6");
+      const { stdout } = await execAsync(
+        "curl -s https://ifconfig.co/json -6 --connect-to api.ipinfo.io:443:[2600:1901:0:13e0::]:443"
+      );
 
       const data = JSON.parse(stdout);
 
@@ -99,7 +104,7 @@ class IPv6InfoFetcher {
         });
         this.ipinfo.sources.push("ifconfig.co");
         console.log(
-          `✅ ifconfig.co 获取IPv6成功: ${data.ip} (${data.country})`,
+          `✅ ifconfig.co 获取IPv6成功: ${data.ip} (${data.country})`
         );
         return true;
       } else {
@@ -119,7 +124,7 @@ class IPv6InfoFetcher {
     try {
       console.log("正在从 api-ipv6.ip.sb 获取IPv6信息...");
       const { stdout } = await execAsync(
-        'curl -s https://api-ipv6.ip.sb/geoip -H "User-Agent:Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.113 Safari/537.36" -6',
+        'curl -s https://api-ipv6.ip.sb/geoip -H "User-Agent:Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.113 Safari/537.36" -6 --connect-to api.ipinfo.io:443:[2600:1901:0:13e0::]:443'
       );
 
       const data = JSON.parse(stdout);
@@ -141,14 +146,13 @@ class IPv6InfoFetcher {
           as_name: data.asn_organization || data.isp,
           org: data.organization,
           continent_code: data.continent_code,
-          source: this.ipinfo.source === "unknown"
-            ? "api-ipv6.ip.sb"
-            : "combined",
+          source:
+            this.ipinfo.source === "unknown" ? "api-ipv6.ip.sb" : "combined",
           isIPv6: true, // 明确设置为 true，因为我们已经验证了
         });
         this.ipinfo.sources.push("api-ipv6.ip.sb");
         console.log(
-          `✅ api-ipv6.ip.sb 获取IPv6成功: ${data.ip} (${data.country})`,
+          `✅ api-ipv6.ip.sb 获取IPv6成功: ${data.ip} (${data.country})`
         );
         return true;
       } else {
@@ -168,7 +172,7 @@ class IPv6InfoFetcher {
     try {
       console.log("正在从 ipv6.ipleak.net 获取IPv6信息...");
       const { stdout } = await execAsync(
-        'curl -s "https://ipv6.ipleak.net/?mode=json" -H "User-Agent:Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.113 Safari/537.36"',
+        'curl -s "https://ipv6.ipleak.net/?mode=json" -H "User-Agent:Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.113 Safari/537.36" --connect-to api.ipinfo.io:443:[2600:1901:0:13e0::]:443'
       );
 
       const data = JSON.parse(stdout);
@@ -192,14 +196,13 @@ class IPv6InfoFetcher {
           continent_code: data.continent_code,
           postal_code: data.postal_code,
           accuracy_radius: data.accuracy_radius,
-          source: this.ipinfo.source === "unknown"
-            ? "ipv6.ipleak.net"
-            : "combined",
+          source:
+            this.ipinfo.source === "unknown" ? "ipv6.ipleak.net" : "combined",
           isIPv6: true, // 明确设置为 true，因为我们已经验证了
         });
         this.ipinfo.sources.push("ipv6.ipleak.net");
         console.log(
-          `✅ ipv6.ipleak.net 获取IPv6成功: ${data.ip} (${data.country_name})`,
+          `✅ ipv6.ipleak.net 获取IPv6成功: ${data.ip} (${data.country_name})`
         );
         return true;
       } else {
@@ -228,20 +231,22 @@ class IPv6InfoFetcher {
           '-H "sec-fetch-dest: empty" ' +
           '-H "sec-fetch-mode: cors" ' +
           '-H "sec-fetch-site: same-site" ' +
-          '-H "Referer: https://www.ipshudi.com/"',
+          '-H "Referer: https://www.ipshudi.com/" --connect-to api.ipinfo.io:443:[2600:1901:0:13e0::]:443'
       );
 
       const data = JSON.parse(stdout);
 
       // 验证响应状态和IPv6地址
       if (
-        data.status && data.code === 0 && data.data && this.isIPv6(data.data)
+        data.status &&
+        data.code === 0 &&
+        data.data &&
+        this.isIPv6(data.data)
       ) {
         this.ipinfo = Object.assign({}, data, this.ipinfo, {
           ip: data.data,
-          source: this.ipinfo.source === "unknown"
-            ? "6.ipshudi.com"
-            : "combined",
+          source:
+            this.ipinfo.source === "unknown" ? "6.ipshudi.com" : "combined",
           isIPv6: true,
         });
         this.ipinfo.sources.push("6.ipshudi.com");
@@ -267,7 +272,7 @@ class IPv6InfoFetcher {
     try {
       console.log("正在从 api6.ipify.org 获取IPv6信息...");
       const { stdout } = await execAsync(
-        'curl -s "https://api6.ipify.org/?format=json" -H "User-Agent:Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.113 Safari/537.36"',
+        'curl -s "https://api6.ipify.org/?format=json" -H "User-Agent:Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.113 Safari/537.36" --connect-to api.ipinfo.io:443:[2600:1901:0:13e0::]:443'
       );
 
       const data = JSON.parse(stdout);
@@ -277,9 +282,8 @@ class IPv6InfoFetcher {
         this.ipinfo = Object.assign({}, data, {
           ...this.ipinfo,
           ip: data.ip,
-          source: this.ipinfo.source === "unknown"
-            ? "api6.ipify.org"
-            : "combined",
+          source:
+            this.ipinfo.source === "unknown" ? "api6.ipify.org" : "combined",
           isIPv6: true, // 明确设置为 true，因为我们已经验证了
         });
         this.ipinfo.sources.push("api6.ipify.org");
@@ -341,7 +345,7 @@ class IPv6InfoFetcher {
       console.log("✅ IPv6信息获取完成");
       console.log(`   IPv6地址: ${this.ipinfo.ip}`);
       console.log(
-        `   国家: ${this.ipinfo.country} (${this.ipinfo.country_code})`,
+        `   国家: ${this.ipinfo.country} (${this.ipinfo.country_code})`
       );
       if (this.ipinfo.region) {
         console.log(`   地区: ${this.ipinfo.region}`);
@@ -353,7 +357,7 @@ class IPv6InfoFetcher {
       console.log(`   组织: ${this.ipinfo.as_name || this.ipinfo.org}`);
       if (this.ipinfo.latitude && this.ipinfo.longitude) {
         console.log(
-          `   坐标: ${this.ipinfo.latitude}, ${this.ipinfo.longitude}`,
+          `   坐标: ${this.ipinfo.latitude}, ${this.ipinfo.longitude}`
         );
       }
       if (this.ipinfo.time_zone) {
@@ -399,13 +403,11 @@ class IPv6InfoFetcher {
 - **网络域名**: ${this.ipinfo.as_domain || "N/A"}`;
 
     if (this.ipinfo.continent) {
-      markdown +=
-        `\n- **大洲**: ${this.ipinfo.continent} (${this.ipinfo.continent_code})`;
+      markdown += `\n- **大洲**: ${this.ipinfo.continent} (${this.ipinfo.continent_code})`;
     }
 
     if (this.ipinfo.latitude && this.ipinfo.longitude) {
-      markdown +=
-        `\n- **地理坐标**: ${this.ipinfo.latitude}, ${this.ipinfo.longitude}`;
+      markdown += `\n- **地理坐标**: ${this.ipinfo.latitude}, ${this.ipinfo.longitude}`;
     }
 
     if (this.ipinfo.time_zone) {
