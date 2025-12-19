@@ -187,7 +187,9 @@ class IPv6InfoFetcher {
           continent_code: data.continent_code,
           postal_code: data.postal_code,
           accuracy_radius: data.accuracy_radius,
-          source: this.ipinfo.source === "unknown" ? "ipv6.ipleak.net" : "combined",
+          source: this.ipinfo.source === "unknown"
+            ? "ipv6.ipleak.net"
+            : "combined",
           isIPv6: true, // 明确设置为 true，因为我们已经验证了
         });
 
