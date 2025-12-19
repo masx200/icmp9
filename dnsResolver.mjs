@@ -11,7 +11,8 @@ import { fetch } from "undici";
 export async function resolveDNS(
   domain,
   type = "AAAA",
-  resolverUrl = "https://fresh-reverse-proxy-middle.masx201.dpdns.org/token/4yF6nSCifSLs8lfkb4t8OWP69kfpgiun/https/dns.google/resolve"
+  resolverUrl =
+    "https://fresh-reverse-proxy-middle.masx201.dpdns.org/token/4yF6nSCifSLs8lfkb4t8OWP69kfpgiun/https/dns.google/resolve",
 ) {
   // 1. 参数验证
   if (!domain || typeof domain !== "string") {
@@ -35,7 +36,7 @@ export async function resolveDNS(
     if (!response.ok) {
       // 如果服务器返回错误，抛出包含状态码和信息的错误
       throw new Error(
-        `DNS API 请求失败: ${response.status} ${response.statusText} ${response.url}`
+        `DNS API 请求失败: ${response.status} ${response.statusText} ${response.url}`,
       );
     }
 
@@ -73,7 +74,7 @@ if (import.meta.main) {
         console.log("\n📋 提取到的 Answer 记录:");
         result.Answer.forEach((answer, index) => {
           console.log(
-            `  ${index + 1}. 数据: ${answer.data}, TTL: ${answer.TTL}秒`
+            `  ${index + 1}. 数据: ${answer.data}, TTL: ${answer.TTL}秒`,
           );
         });
       } else {

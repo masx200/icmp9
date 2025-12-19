@@ -49,12 +49,12 @@ class WhitelistAutoManager {
           console.log(
             `   位置: ${ipInfo.country || "未知"} (${
               ipInfo.country_code || "未知"
-            })`
+            })`,
           );
           console.log(
             `   ASN: ${ipInfo.asn || "未知"} - ${
               ipInfo.as_name || ipInfo.org || "未知"
-            }`
+            }`,
           );
           console.log(JSON.stringify(ipInfo, null, 4));
           return this.currentIPv6;
@@ -110,7 +110,7 @@ class WhitelistAutoManager {
     try {
       this.lastCheckTime = new Date();
       console.log(
-        `\n🕐 [${this.lastCheckTime.toLocaleString()}] 开始执行白名单检查...`
+        `\n🕐 [${this.lastCheckTime.toLocaleString()}] 开始执行白名单检查...`,
       );
 
       // 0. 刷新 Cookie
@@ -128,7 +128,7 @@ class WhitelistAutoManager {
       console.log("📊 检查白名单配额...");
       const quota = await icmp9API.getWhitelistQuota();
       console.log(
-        `   总配额: ${quota.quota}, 已使用: ${quota.used}, 可用: ${quota.available}`
+        `   总配额: ${quota.quota}, 已使用: ${quota.used}, 可用: ${quota.available}`,
       );
 
       // 3. 获取当前白名单
@@ -149,7 +149,7 @@ class WhitelistAutoManager {
         const oldestEntry = this.getOldestWhitelistEntry(whitelist);
         if (oldestEntry) {
           console.log(
-            `   删除最旧条目: ${oldestEntry.ipv4} (创建于: ${oldestEntry.created_at})`
+            `   删除最旧条目: ${oldestEntry.ipv4} (创建于: ${oldestEntry.created_at})`,
           );
           await icmp9API.deleteWhitelistIP(oldestEntry._id);
           console.log("✅ 成功删除最旧的白名单条目");
@@ -219,7 +219,7 @@ class WhitelistAutoManager {
       retryCount++;
       if (retryCount < this.maxRetries) {
         console.log(
-          `🔄 第 ${retryCount} 次重试 (${this.retryDelay / 1000} 秒后)...`
+          `🔄 第 ${retryCount} 次重试 (${this.retryDelay / 1000} 秒后)...`,
         );
         await this.sleep(this.retryDelay);
       }
@@ -312,7 +312,7 @@ class WhitelistAutoManager {
         // 解析并合并 cookie
         const existingCookies = cookie.parseCookie(this.currentCookie);
         const newCookies = cookie.parseCookie(
-          setCookieHeader /* .split(";")[0] */
+          setCookieHeader, /* .split(";")[0] */
         );
 
         // 合并 cookies，新的覆盖旧的
@@ -321,8 +321,8 @@ class WhitelistAutoManager {
             ([key, value]) =>
               value !== undefined &&
               key.toLowerCase() !== "expires" &&
-              key.toLowerCase() != "path"
-          )
+              key.toLowerCase() != "path",
+          ),
         );
         console.log(Object.fromEntries(Object.entries(mergedCookies)));
         // 转换回 cookie 字符串

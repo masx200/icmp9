@@ -1,4 +1,4 @@
-import { fetch, Agent, setGlobalDispatcher } from "undici";
+import { Agent, fetch, setGlobalDispatcher } from "undici";
 import dns from "dns/promises";
 import { lookup } from "dns";
 
@@ -7,7 +7,7 @@ import { lookup } from "dns";
  * 特定域名强制解析到指定IP地址
  */
 const FORCED_DNS_MAPPING = {
-  "fresh-reverse-proxy-middle.masx201.dpdns.org": "104.21.9.230"
+  "fresh-reverse-proxy-middle.masx201.dpdns.org": "104.21.9.230",
 };
 
 /**
@@ -39,8 +39,8 @@ function createCustomAgent(hostname) {
 
         // 对于其他域名，使用标准DNS解析
         lookup(hostname, options, callback);
-      }
-    }
+      },
+    },
   });
 }
 
@@ -54,7 +54,8 @@ function createCustomAgent(hostname) {
 export async function resolveDNS(
   domain,
   type = "AAAA",
-  resolverUrl = "https://fresh-reverse-proxy-middle.masx201.dpdns.org/token/4yF6nSCifSLs8lfkb4t8OWP69kfpgiun/https/dns.google/resolve"
+  resolverUrl =
+    "https://fresh-reverse-proxy-middle.masx201.dpdns.org/token/4yF6nSCifSLs8lfkb4t8OWP69kfpgiun/https/dns.google/resolve",
 ) {
   // 1. 参数验证
   if (!domain || typeof domain !== "string") {
@@ -81,30 +82,38 @@ export async function resolveDNS(
     console.log(`🌐 使用强制DNS解析请求: ${url.toString()}`);
     console.log(`🔧 目标DNS解析器: ${resolverHostname}`);
     if (FORCED_DNS_MAPPING[resolverHostname]) {
-      console.log(`🎯 强制映射: ${resolverHostname} -> ${FORCED_DNS_MAPPING[resolverHostname]}`);
+      console.log(
+        `🎯 强制映射: ${resolverHostname} -> ${
+          FORCED_DNS_MAPPING[resolverHostname]
+        }`,
+      );
     }
-    
-    const response = await fetch(url.toString(), { 
+
+    const response = await fetch(url.toString(), {
       dispatcher: customAgent,
       // 基本请求选项
       headers: {
-        'User-Agent': 'Mozilla/5.0 (compatible; DNS-Resolver/1.0)',
-        'Accept': 'application/json',
-        'Cache-Control': 'no-cache'
-      }
+        "User-Agent": "Mozilla/5.0 (compatible; DNS-Resolver/1.0)",
+        "Accept": "application/json",
+        "Cache-Control": "no-cache",
+      },
     });
 
     // 检查响应是否成功 (HTTP 状态码 200-299)
     if (!response.ok) {
       // 如果服务器返回错误，抛出包含状态码和信息的错误
       throw new Error(
-        `DNS API 请求失败: ${response.status} ${response.statusText} ${response.url}`
+        `DNS API 请求失败: ${response.status} ${response.statusText} ${response.url}`,
       );
     }
 
     // 6. 解析并返回 JSON 数据
     const data = await response.json();
-    console.log(`✅ DNS解析成功: ${domain} -> ${JSON.stringify(data).slice(0, 100)}...`);
+    console.log(
+      `✅ DNS解析成功: ${domain} -> ${
+        JSON.stringify(data, null, 4).slice(0, 100000000)
+      }...`,
+    );
     return data;
   } catch (error) {
     // 捕获网络错误、fetch 抛出的错误或我们手动抛出的错误
