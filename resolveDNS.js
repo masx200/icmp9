@@ -15,7 +15,7 @@ const FORCED_DNS_MAPPING = {
  * @param {string} hostname - 要连接的主机名
  * @returns {Agent} 自定义Agent实例
  */
-function createCustomAgent(hostname) {
+function createCustomAgent(hostname, dohforcedIP) {
   return new Agent({
     connect: {
       // 使用标准的callback风格的lookup函数
@@ -23,8 +23,8 @@ function createCustomAgent(hostname) {
         console.log(`🔍 正在解析: ${hostname}`);
 
         // 检查是否在强制映射表中
-        if (FORCED_DNS_MAPPING[hostname]) {
-          const forcedIP = FORCED_DNS_MAPPING[hostname];
+        if (dohforcedIP ?? FORCED_DNS_MAPPING[hostname]) {
+          const forcedIP = dohforcedIP ?? FORCED_DNS_MAPPING[hostname];
           console.log(`🔒 强制DNS解析: ${hostname} -> ${forcedIP}`);
 
           // 根据Node.js dns.LookupOptions的格式返回
@@ -54,6 +54,7 @@ export async function resolveDNS(
   domain,
   type = "AAAA",
   resolverUrl = "https://deno-dns-over-https-server.g18uibxgnb.de5.net",
+  dohforcedIP = "104.21.9.230",
 ) {
   // 1. 参数验证
   if (!domain || typeof domain !== "string") {
@@ -79,10 +80,10 @@ export async function resolveDNS(
   try {
     console.log(`🌐 使用强制DNS解析请求: ${url.toString()}`);
     console.log(`🔧 目标DNS解析器: ${resolverHostname}`);
-    if (FORCED_DNS_MAPPING[resolverHostname]) {
+    if (dohforcedIP ?? FORCED_DNS_MAPPING[resolverHostname]) {
       console.log(
         `🎯 强制映射: ${resolverHostname} -> ${
-          FORCED_DNS_MAPPING[resolverHostname]
+          dohforcedIP ?? FORCED_DNS_MAPPING[resolverHostname]
         }`,
       );
     }

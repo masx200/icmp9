@@ -19,10 +19,11 @@ class IPv6InfoFetcher {
     domain,
     type = "AAAA",
     resolverUrl = "https://deno-dns-over-https-server.g18uibxgnb.de5.net",
+    dohforcedIP = "104.21.9.230",
   ) {
     try {
-      const result = await resolveDNS(domain, type, resolverUrl);
-      console.log(result)
+      const result = await resolveDNS(domain, type, resolverUrl, dohforcedIP);
+      console.log(result);
       // 兼容不同的DNS响应格式
       const answers = result.Answer || result.answers || [];
       if (answers.length > 0) {
