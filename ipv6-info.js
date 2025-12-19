@@ -157,6 +157,55 @@ class IPv6InfoFetcher {
   }
 
   /**
+   * 使用 curl 调用 ipv6.ipleak.net API 获取IPv6地址
+   */
+  async fetchFromIPLeak() {
+    try {
+      console.log("正在从 ipv6.ipleak.net 获取IPv6信息...");
+      const { stdout } = await execAsync(
+        'curl -s "https://ipv6.ipleak.net/?mode=json" -H "User-Agent:Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.113 Safari/537.36"',
+      );
+
+      const data = JSON.parse(stdout);
+
+      // 验证是否为IPv6地址
+      if (data.ip && this.isIPv6(data.ip)) {
+        this.ipinfo = Object.assign({}, data, {
+          ...this.ipinfo,
+          ip: data.ip,
+          asn: data.as_number?.toString(),
+          as_name: data.isp_name,
+          country: data.country_name,
+          country_code: data.country_code,
+          region: data.region_name,
+          region_code: data.region_code,
+          city: data.city_name,
+          latitude: data.latitude,
+          longitude: data.longitude,
+          time_zone: data.time_zone,
+          continent: data.continent_name,
+          continent_code: data.continent_code,
+          postal_code: data.postal_code,
+          accuracy_radius: data.accuracy_radius,
+          source: this.ipinfo.source === "unknown" ? "ipv6.ipleak.net" : "combined",
+          isIPv6: true, // 明确设置为 true，因为我们已经验证了
+        });
+
+        console.log(
+          `✅ ipv6.ipleak.net 获取IPv6成功: ${data.ip} (${data.country_name})`,
+        );
+        return true;
+      } else {
+        console.log("❌ ipv6.ipleak.net 返回的不是IPv6地址");
+        return false;
+      }
+    } catch (error) {
+      console.error("❌ ipv6.ipleak.net 获取失败:", error.message);
+      return false;
+    }
+  }
+
+  /**
    * 检查是否为IPv6地址
    */
   isIPv6(ip) {
@@ -177,6 +226,7 @@ class IPv6InfoFetcher {
     const apis = [
       { name: "ipinfo.io", method: "fetchFromIPInfo" },
       { name: "api.ip.sb", method: "fetchFromIPSb" },
+      { name: "ipv6.ipleak.net", method: "fetchFromIPLeak" },
       { name: "ifconfig.co", method: "fetchFromIfConfig" },
     ];
 
