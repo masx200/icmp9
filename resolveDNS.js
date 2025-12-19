@@ -70,7 +70,7 @@ export async function resolveDNS(
   const resolverHostname = url.hostname;
 
   // 3. 创建自定义Agent用于强制DNS解析
-  const customAgent = createCustomAgent(resolverHostname);
+  const customAgent = createCustomAgent(resolverHostname,dohforcedIP);
 
   // 4. 构建请求URL
   url.searchParams.append("name", domain);
