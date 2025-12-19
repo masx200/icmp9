@@ -2,16 +2,106 @@
 
 import { exec } from "child_process";
 import { promisify } from "util";
+import { fetch } from "undici";
 
 const execAsync = promisify(exec);
-import { fetch } from "undici";
+
+/**
+ * 使用 Google DNS-over-HTTPS (DoH) API 解析域名
+ * @param {string} domain - 要解析的域名 (例如: 'example.com')
+ * @param {string} type - DNS 记录类型 (例如: 'A', 'AAAA', 'MX', 'TXT')
+ * @returns {Promise<object>} 返回一个 Promise，解析为 DNS 查询的 JSON 结果
+ */
+async function resolveDNS(
+  domain,
+  type = "AAAA",
+  resolverUrl = "https://fresh-reverse-proxy-middle.masx201.dpdns.org/token/4yF6nSCifSLs8lfkb4t8OWP69kfpgiun/https/dns.google/resolve"
+) {
+  // 1. 参数验证
+  if (!domain || typeof domain !== "string") {
+    throw new Error("无效的域名参数");
+  }
+
+  if (!type || typeof type !== "string") {
+    throw new Error("无效的DNS记录类型参数");
+  }
+
+  // 2. 构建请求 URL
+  const url = new URL(resolverUrl);
+  url.searchParams.append("name", domain);
+  url.searchParams.append("type", type);
+
+  // 3. 发起请求
+  try {
+    const response = await fetch(url);
+
+    // 检查响应是否成功 (HTTP 状态码 200-299)
+    if (!response.ok) {
+      // 如果服务器返回错误，抛出包含状态码和信息的错误
+      throw new Error(
+        `DNS API 请求失败: ${response.status} ${response.statusText} ${response.url}`
+      );
+    }
+
+    // 4. 解析并返回 JSON 数据
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    // 捕获网络错误、fetch 抛出的错误或我们手动抛出的错误
+    // 为了统一错误信息，可以在这里进行包装
+    if (error instanceof Error) {
+      throw new Error(`DNS 解析过程中发生错误: ${error.message}`);
+    }
+    throw new Error("DNS 解析时发生未知错误");
+  }
+}
 /**
  * 获取当前IPv6地址信息
  * 使用多个API服务获取IP地理位置信息
  */
 class IPv6InfoFetcher {
-  async lookupipv6(domain,type="AAAA", resolverUrl = "https://fresh-reverse-proxy-middle.masx201.dpdns.org/token/4yF6nSCifSLs8lfkb4t8OWP69kfpgiun/https/dns.google/resolve")/* : Promise<Array<string>>  */{
-    return [];
+  /**
+   * 解析域名的IPv6地址
+   * @param {string} domain - 要解析的域名
+   * @param {string} type - DNS记录类型，默认为AAAA
+   * @param {string} resolverUrl - DNS解析器URL
+   * @returns {Promise<Array<string>>} 返回IPv6地址数组
+   */
+  async lookupipv6(domain, type = "AAAA", resolverUrl = "https://fresh-reverse-proxy-middle.masx201.dpdns.org/token/4yF6nSCifSLs8lfkb4t8OWP69kfpgiun/https/dns.google/resolve") {
+    try {
+      const result = await resolveDNS(domain, type, resolverUrl);
+      if (result.Answer && result.Answer.length > 0) {
+        return result.Answer.map(answer => answer.data);
+      }
+      return [];
+    } catch (error) {
+      console.error(`解析域名 ${domain} 的IPv6地址失败:`, error.message);
+      return [];
+    }
+  }
+
+  /**
+   * 获取域名的IPv6地址用于--connect-to参数
+   * @param {string} domain - 要解析的域名
+   * @returns {Promise<string>} 返回格式化的IPv6地址，用于--connect-to参数
+   */
+  async getIPv6ForConnectTo(domain) {
+    try {
+      console.log(`正在解析域名 ${domain} 的IPv6地址...`);
+      const ipv6Addresses = await this.lookupipv6(domain);
+      
+      if (ipv6Addresses.length > 0) {
+        const ipv6 = ipv6Addresses[0]; // 使用第一个IPv6地址
+        console.log(`✅ 成功解析到 ${domain} 的IPv6地址: ${ipv6}`);
+        return `[${ipv6}]`;
+      } else {
+        console.log(`❌ 未能解析到 ${domain} 的IPv6地址`);
+        return null;
+      }
+    } catch (error) {
+      console.error(`❌ 解析 ${domain} 的IPv6地址时出错:`, error.message);
+      return null;
+    }
   }
   constructor() {
     this.ipinfo = {
@@ -40,8 +130,13 @@ class IPv6InfoFetcher {
   async fetchFromIPInfo() {
     try {
       console.log("正在从 ipinfo.io 获取IPv6信息...");
+      
+      // 获取ipinfo.io的IPv6地址用于--connect-to
+      const ipInfoIPv6 = await this.getIPv6ForConnectTo("api.ipinfo.io");
+      const connectToOption = ipInfoIPv6 ? `--connect-to api.ipinfo.io:443:${ipInfoIPv6}:443` : '-6';
+      
       const { stdout } = await execAsync(
-        'curl -s https://api.ipinfo.io/lite/me -H "Authorization: Bearer e1d992dda9d73e" -6 --connect-to api.ipinfo.io:443:[2600:1901:0:13e0::]:443'
+        `curl -s https://api.ipinfo.io/lite/me -H "Authorization: Bearer e1d992dda9d73e" ${connectToOption}`
       );
 
       const data = JSON.parse(stdout);
@@ -80,8 +175,13 @@ class IPv6InfoFetcher {
   async fetchFromIfConfig() {
     try {
       console.log("正在从 ifconfig.co 获取IPv6信息...");
+      
+      // 获取ifconfig.co的IPv6地址用于--connect-to
+      const ifConfigIPv6 = await this.getIPv6ForConnectTo("ifconfig.co");
+      const connectToOption = ifConfigIPv6 ? `--connect-to ifconfig.co:443:${ifConfigIPv6}:443` : '-6';
+      
       const { stdout } = await execAsync(
-        "curl -s https://ifconfig.co/json -6 --connect-to api.ipinfo.io:443:[2600:1901:0:13e0::]:443"
+        `curl -s https://ifconfig.co/json ${connectToOption}`
       );
 
       const data = JSON.parse(stdout);
@@ -123,8 +223,13 @@ class IPv6InfoFetcher {
   async fetchFromIPSb() {
     try {
       console.log("正在从 api-ipv6.ip.sb 获取IPv6信息...");
+      
+      // 获取api-ipv6.ip.sb的IPv6地址用于--connect-to
+      const apiSbIPv6 = await this.getIPv6ForConnectTo("api-ipv6.ip.sb");
+      const connectToOption = apiSbIPv6 ? `--connect-to api-ipv6.ip.sb:443:${apiSbIPv6}:443` : '-6';
+      
       const { stdout } = await execAsync(
-        'curl -s https://api-ipv6.ip.sb/geoip -H "User-Agent:Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.113 Safari/537.36" -6 --connect-to api.ipinfo.io:443:[2600:1901:0:13e0::]:443'
+        `curl -s "https://api-ipv6.ip.sb/geoip" -H "User-Agent:Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.113 Safari/537.36" ${connectToOption}`
       );
 
       const data = JSON.parse(stdout);
@@ -171,8 +276,13 @@ class IPv6InfoFetcher {
   async fetchFromIPLeak() {
     try {
       console.log("正在从 ipv6.ipleak.net 获取IPv6信息...");
+      
+      // 获取ipv6.ipleak.net的IPv6地址用于--connect-to
+      const ipLeakIPv6 = await this.getIPv6ForConnectTo("ipv6.ipleak.net");
+      const connectToOption = ipLeakIPv6 ? `--connect-to ipv6.ipleak.net:443:${ipLeakIPv6}:443` : '-6';
+      
       const { stdout } = await execAsync(
-        'curl -s "https://ipv6.ipleak.net/?mode=json" -H "User-Agent:Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.113 Safari/537.36" --connect-to api.ipinfo.io:443:[2600:1901:0:13e0::]:443'
+        `curl -s "https://ipv6.ipleak.net/?mode=json" -H "User-Agent:Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.113 Safari/537.36" ${connectToOption}`
       );
 
       const data = JSON.parse(stdout);
@@ -221,8 +331,13 @@ class IPv6InfoFetcher {
   async fetchFromIPshudi() {
     try {
       console.log("正在从 6.ipshudi.com 获取IPv6信息...");
+      
+      // 获取6.ipshudi.com的IPv6地址用于--connect-to
+      const ipshudiIPv6 = await this.getIPv6ForConnectTo("6.ipshudi.com");
+      const connectToOption = ipshudiIPv6 ? `--connect-to 6.ipshudi.com:443:${ipshudiIPv6}:443` : '-6';
+      
       const { stdout } = await execAsync(
-        'curl -s "https://6.ipshudi.com/" ' +
+        `curl -s "https://6.ipshudi.com/" ` +
           '-H "accept: application/json, text/javascript, */*; q=0.01" ' +
           '-H "accept-language: zh-CN,zh;q=0.9,en;q=0.8" ' +
           '-H "sec-ch-ua: \\"Google Chrome\\";v=\\"143\\", \\"Chromium\\";v=\\"143\\", \\"Not A(Brand\\";v=\\"24\\"" ' +
@@ -231,7 +346,7 @@ class IPv6InfoFetcher {
           '-H "sec-fetch-dest: empty" ' +
           '-H "sec-fetch-mode: cors" ' +
           '-H "sec-fetch-site: same-site" ' +
-          '-H "Referer: https://www.ipshudi.com/" --connect-to api.ipinfo.io:443:[2600:1901:0:13e0::]:443'
+          `-H "Referer: https://www.ipshudi.com/" ${connectToOption}`
       );
 
       const data = JSON.parse(stdout);
@@ -271,8 +386,13 @@ class IPv6InfoFetcher {
   async fetchFromIPify() {
     try {
       console.log("正在从 api6.ipify.org 获取IPv6信息...");
+      
+      // 获取api6.ipify.org的IPv6地址用于--connect-to
+      const ipifyIPv6 = await this.getIPv6ForConnectTo("api6.ipify.org");
+      const connectToOption = ipifyIPv6 ? `--connect-to api6.ipify.org:443:${ipifyIPv6}:443` : '-6';
+      
       const { stdout } = await execAsync(
-        'curl -s "https://api6.ipify.org/?format=json" -H "User-Agent:Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.113 Safari/537.36" --connect-to api.ipinfo.io:443:[2600:1901:0:13e0::]:443'
+        `curl -s "https://api6.ipify.org/?format=json" -H "User-Agent:Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.113 Safari/537.36" ${connectToOption}`
       );
 
       const data = JSON.parse(stdout);
