@@ -106,7 +106,7 @@ class IPv6InfoFetcher {
 
       console.log(`📡 发起HTTP请求: ${url}`);
       const data = await httpClient.getJSON(url, options);
-
+      console.log(data);
       // 验证是否为IPv6地址
       if (data.ip && this.isIPv6(data.ip)) {
         this.ipinfo = Object.assign({}, data, {
@@ -157,6 +157,7 @@ class IPv6InfoFetcher {
 
       console.log(`📡 发起HTTP请求: ${url}`);
       const data = await httpClient.getJSON(url, options);
+      console.log(data);
 
       // 验证是否为IPv6地址
       if (data.ip && this.isIPv6(data.ip)) {
@@ -218,6 +219,7 @@ class IPv6InfoFetcher {
 
       console.log(`📡 发起HTTP请求: ${url}`);
       const data = await httpClient.getJSON(url, options);
+      console.log(data);
 
       // 验证是否为IPv6地址
       if (data.ip && this.isIPv6(data.ip)) {
@@ -285,6 +287,7 @@ class IPv6InfoFetcher {
 
       console.log(`📡 发起HTTP请求: ${url}`);
       const data = await httpClient.getJSON(url, options);
+      console.log(data);
 
       // 验证是否为IPv6地址
       if (data.ip && this.isIPv6(data.ip)) {
@@ -360,6 +363,7 @@ class IPv6InfoFetcher {
 
       console.log(`📡 发起HTTP请求: ${url}`);
       const data = await httpClient.getJSON(url, options);
+      console.log(data);
 
       // 验证响应状态和IPv6地址
       if (
@@ -420,6 +424,7 @@ class IPv6InfoFetcher {
 
       console.log(`📡 发起HTTP请求: ${url}`);
       const data = await httpClient.getJSON(url, options);
+      console.log(data);
 
       // 验证是否为IPv6地址
       if (data.ip && this.isIPv6(data.ip)) {

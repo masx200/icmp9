@@ -42,10 +42,12 @@ export class CustomDNSAgent extends Agent {
           ) {
             const ip = hostname.replace(/[\[\]]/g, "");
             if (options && options.all) {
-              return callback(null, [{
-                address: ip,
-                family: ip.includes(":") ? 6 : 4,
-              }]);
+              return callback(null, [
+                {
+                  address: ip,
+                  family: ip.includes(":") ? 6 : 4,
+                },
+              ]);
             } else {
               return callback(null, ip, ip.includes(":") ? 6 : 4);
             }
@@ -55,7 +57,9 @@ export class CustomDNSAgent extends Agent {
           resolveDNS(hostname, "A")
             .then((dnsResult) => {
               if (
-                dnsResult && dnsResult.answers && dnsResult.answers.length > 0
+                dnsResult &&
+                dnsResult.answers &&
+                dnsResult.answers.length > 0
               ) {
                 // 随机选择一个IP地址
                 const randomIndex = Math.floor(
@@ -229,6 +233,12 @@ export class HTTPClient {
    */
   async getJSON(url, options = {}) {
     const response = await this.get(url, options);
+    console.log(response);
+    if (response.status !== 200) {
+      throw new Error(
+        `HTTP错误! 状态: ${response.status} ${response.statusText} ${response.url}`,
+      );
+    }
     return await response.json();
   }
 
