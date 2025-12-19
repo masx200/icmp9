@@ -1,5 +1,6 @@
 import { fetch, Agent, setGlobalDispatcher } from "undici";
-import dns from "dns";
+import dns from "dns/promises";
+import { lookup } from "dns";
 
 /**
  * 强制DNS映射表
@@ -11,24 +12,33 @@ const FORCED_DNS_MAPPING = {
 
 /**
  * 创建自定义Agent，用于强制DNS解析
- * 使用lookup函数进行DNS解析控制
+ * 简化版本，专注于DNS解析劫持
  * @param {string} hostname - 要连接的主机名
  * @returns {Agent} 自定义Agent实例
  */
 function createCustomAgent(hostname) {
   return new Agent({
     connect: {
-      lookup: (lookupHostname, options, callback) => {
+      // 使用异步lookup函数
+      lookup: async (hostname, options) => {
+        console.log(`🔍 正在解析: ${hostname}`);
+        
         // 检查是否在强制映射表中
-        if (FORCED_DNS_MAPPING[lookupHostname]) {
-          const forcedIP = FORCED_DNS_MAPPING[lookupHostname];
-          console.log(`🔒 强制DNS解析: ${lookupHostname} -> ${forcedIP}`);
-          callback(null, forcedIP, 4); // 强制使用IPv4地址
-          return;
+        if (FORCED_DNS_MAPPING[hostname]) {
+          const forcedIP = FORCED_DNS_MAPPING[hostname];
+          console.log(`🔒 强制DNS解析: ${hostname} -> ${forcedIP}`);
+          return { address: forcedIP, family: 4 };
         }
 
         // 对于其他域名，使用正常DNS解析
-        dns.lookup(lookupHostname, options, callback);
+        try {
+          const result = await dns.lookup(hostname, { family: 4 });
+          console.log(`🌐 标准DNS解析: ${hostname} -> ${result.address}`);
+          return { address: result.address, family: result.family };
+        } catch (error) {
+          console.error(`❌ DNS解析失败: ${hostname} - ${error.message}`);
+          throw error;
+        }
       }
     }
   });
@@ -69,11 +79,14 @@ export async function resolveDNS(
   // 5. 发起请求，使用自定义Agent
   try {
     console.log(`🌐 使用强制DNS解析请求: ${url.toString()}`);
-    console.log(`🔧 使用强制DNS解析: ${resolverHostname} -> ${FORCED_DNS_MAPPING[resolverHostname] || '标准DNS'}`);
+    console.log(`🔧 目标DNS解析器: ${resolverHostname}`);
+    if (FORCED_DNS_MAPPING[resolverHostname]) {
+      console.log(`🎯 强制映射: ${resolverHostname} -> ${FORCED_DNS_MAPPING[resolverHostname]}`);
+    }
     
     const response = await fetch(url.toString(), { 
       dispatcher: customAgent,
-      // 额外选项，确保连接稳定
+      // 基本请求选项
       headers: {
         'User-Agent': 'Mozilla/5.0 (compatible; DNS-Resolver/1.0)',
         'Accept': 'application/json',
