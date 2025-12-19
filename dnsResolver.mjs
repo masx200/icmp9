@@ -49,7 +49,7 @@ export async function resolveDNS(
     });
 
     console.log(`✅ DNS 解析成功: ${domain}`);
-
+console.log(result)
     return result;
   } catch (error) {
     // 捕获网络错误、DNS 解析错误或我们手动抛出的错误

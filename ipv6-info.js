@@ -22,6 +22,7 @@ class IPv6InfoFetcher {
   ) {
     try {
       const result = await resolveDNS(domain, type, resolverUrl);
+      console.log(result)
       // 兼容不同的DNS响应格式
       const answers = result.Answer || result.answers || [];
       if (answers.length > 0) {
