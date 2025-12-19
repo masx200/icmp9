@@ -158,7 +158,7 @@ const DOH_SERVERS = [
   },
   {
     name: "Quad9 DNS",
-    url: "https://fresh-reverse-proxy-middle.masx201.dpdns.org/token/4yF6nSCifSLs8lfkb4t8OWP69kfpgiun/https://dns.quad9.net/dns-query",
+    url: "https://fresh-reverse-proxy-middle.masx201.dpdns.org/token/4yF6nSCifSLs8lfkb4t8OWP69kfpgiun/https/dns.quad9.net/dns-query",
     priority: 3
   }
 ];
