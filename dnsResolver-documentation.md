@@ -2,7 +2,9 @@
 
 ## 概述
 
-`dnsResolver.mjs` 是一个基于 Google DNS-over-HTTPS (DoH) API 的域名解析模块，支持多种 DNS 记录类型的查询。该模块使用 `undici` 库进行 HTTP 请求，提供现代化的异步 DNS 解析功能。
+`dnsResolver.mjs` 是一个基于 Google DNS-over-HTTPS (DoH) API
+的域名解析模块，支持多种 DNS 记录类型的查询。该模块使用 `undici` 库进行 HTTP
+请求，提供现代化的异步 DNS 解析功能。
 
 ## 功能特性
 
@@ -31,7 +33,8 @@ pnpm add undici
 - **`domain`** (string, 必需): 要解析的域名，例如 `'example.com'`
 - **`type`** (string, 可选): DNS 记录类型，默认为 `'AAAA'`
   - 支持的类型: `'A'`, `'AAAA'`, `'MX'`, `'TXT'`, `'CNAME'`, `'NS'` 等
-- **`resolverUrl`** (string, 可选): 自定义 DNS 解析器 URL，默认使用 Google DNS DoH API
+- **`resolverUrl`** (string, 可选): 自定义 DNS 解析器 URL，默认使用 Google DNS
+  DoH API
 
 #### 返回值
 
@@ -48,41 +51,41 @@ pnpm add undici
 ### 基本用法
 
 ```javascript
-import { resolveDNS } from './dnsResolver.mjs';
+import { resolveDNS } from "./dnsResolver.mjs";
 
 // 解析域名的 AAAA 记录 (IPv6)
 try {
-  const result = await resolveDNS('example.com', 'AAAA');
-  console.log('解析结果:', result);
+  const result = await resolveDNS("example.com", "AAAA");
+  console.log("解析结果:", result);
 } catch (error) {
-  console.error('解析失败:', error.message);
+  console.error("解析失败:", error.message);
 }
 ```
 
 ### 解析不同类型的记录
 
 ```javascript
-import { resolveDNS } from './dnsResolver.mjs';
+import { resolveDNS } from "./dnsResolver.mjs";
 
 // 解析 A 记录 (IPv4)
-const aRecord = await resolveDNS('google.com', 'A');
+const aRecord = await resolveDNS("google.com", "A");
 
 // 解析 MX 记录 (邮件交换)
-const mxRecord = await resolveDNS('gmail.com', 'MX');
+const mxRecord = await resolveDNS("gmail.com", "MX");
 
 // 解析 TXT 记录
-const txtRecord = await resolveDNS('_dmarc.example.com', 'TXT');
+const txtRecord = await resolveDNS("_dmarc.example.com", "TXT");
 ```
 
 ### 处理解析结果
 
 ```javascript
-import { resolveDNS } from './dnsResolver.mjs';
+import { resolveDNS } from "./dnsResolver.mjs";
 
 async function analyzeDomain(domain) {
   try {
-    const result = await resolveDNS(domain, 'A');
-    
+    const result = await resolveDNS(domain, "A");
+
     if (result.Answer && result.Answer.length > 0) {
       console.log(`📋 ${domain} 的解析结果:`);
       result.Answer.forEach((answer, index) => {
@@ -96,21 +99,21 @@ async function analyzeDomain(domain) {
   }
 }
 
-analyzeDomain('github.com');
+analyzeDomain("github.com");
 ```
 
 ### 使用自定义解析器
 
 ```javascript
-import { resolveDNS } from './dnsResolver.mjs';
+import { resolveDNS } from "./dnsResolver.mjs";
 
-const customResolver = 'https://cloudflare-dns.com/dns-query';
+const customResolver = "https://cloudflare-dns.com/dns-query";
 
 try {
-  const result = await resolveDNS('example.com', 'A', customResolver);
-  console.log('使用 Cloudflare DNS 解析结果:', result);
+  const result = await resolveDNS("example.com", "A", customResolver);
+  console.log("使用 Cloudflare DNS 解析结果:", result);
 } catch (error) {
-  console.error('解析失败:', error.message);
+  console.error("解析失败:", error.message);
 }
 ```
 
@@ -190,20 +193,20 @@ node dnsResolver.mjs
 ### 错误处理最佳实践
 
 ```javascript
-import { resolveDNS } from './dnsResolver.mjs';
+import { resolveDNS } from "./dnsResolver.mjs";
 
-async function robustDNSQuery(domain, type = 'A') {
+async function robustDNSQuery(domain, type = "A") {
   try {
     const result = await resolveDNS(domain, type);
-    
+
     if (result.Status !== 0) {
       throw new Error(`DNS 查询返回错误状态: ${result.Status}`);
     }
-    
+
     if (!result.Answer || result.Answer.length === 0) {
-      throw new Error('未找到匹配的 DNS 记录');
+      throw new Error("未找到匹配的 DNS 记录");
     }
-    
+
     return result;
   } catch (error) {
     console.error(`DNS 查询失败 (${domain}, ${type}):`, error.message);

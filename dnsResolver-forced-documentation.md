@@ -2,13 +2,15 @@
 
 ## 概述
 
-本文档详细介绍如何在 `dnsResolver.mjs` 中实现强制 DNS 解析功能，确保在网络受限环境下仍能正常进行 DNS 查询。
+本文档详细介绍如何在 `dnsResolver.mjs` 中实现强制 DNS
+解析功能，确保在网络受限环境下仍能正常进行 DNS 查询。
 
 ## 强制 DNS 解析原理
 
 ### 什么是强制 DNS 解析？
 
-强制 DNS 解析是指通过特定的网络代理或中转服务，绕过本地网络限制，强制将 DNS 请求路由到指定的解析服务器。这种方法特别适用于：
+强制 DNS 解析是指通过特定的网络代理或中转服务，绕过本地网络限制，强制将 DNS
+请求路由到指定的解析服务器。这种方法特别适用于：
 
 - 🚫 网络环境限制 DNS 查询
 - 🌍 需要访问特定地区的 DNS 服务
@@ -45,7 +47,8 @@ graph LR
 export async function resolveDNS(
   domain,
   type = "AAAA",
-  resolverUrl = "https://fresh-reverse-proxy-middle.masx201.dpdns.org/token/4yF6nSCifSLs8lfkb4t8OWP69kfpgiun/https/dns.google/resolve",
+  resolverUrl =
+    "https://fresh-reverse-proxy-middle.masx201.dpdns.org/token/4yF6nSCifSLs8lfkb4t8OWP69kfpgiun/https/dns.google/resolve",
 ) {
   // 实现代码...
 }
@@ -67,6 +70,7 @@ url.searchParams.append("type", type);
 ```
 
 **URL 结构分析：**
+
 ```
 https://[代理服务]/token/[认证令牌]/https://[目标服务]?name=[域名]&type=[记录类型]
 ```
@@ -76,13 +80,13 @@ https://[代理服务]/token/[认证令牌]/https://[目标服务]?name=[域名]
 ```javascript
 try {
   const response = await fetch(url);
-  
+
   if (!response.ok) {
     throw new Error(
-      `DNS API 请求失败: ${response.status} ${response.statusText} ${response.url}`
+      `DNS API 请求失败: ${response.status} ${response.statusText} ${response.url}`,
     );
   }
-  
+
   const data = await response.json();
   return data;
 } catch (error) {
@@ -98,17 +102,18 @@ try {
 ### 1. 自定义代理服务
 
 ```javascript
-import { resolveDNS } from './dnsResolver.mjs';
+import { resolveDNS } from "./dnsResolver.mjs";
 
 // 使用不同的代理服务
-const customProxy = "https://your-proxy-server.com/token/YOUR_TOKEN/https/dns.google/resolve";
+const customProxy =
+  "https://your-proxy-server.com/token/YOUR_TOKEN/https/dns.google/resolve";
 
 async function forcedResolution() {
   try {
-    const result = await resolveDNS('example.com', 'AAAA', customProxy);
-    console.log('强制解析结果:', result);
+    const result = await resolveDNS("example.com", "AAAA", customProxy);
+    console.log("强制解析结果:", result);
   } catch (error) {
-    console.error('强制解析失败:', error.message);
+    console.error("强制解析失败:", error.message);
   }
 }
 ```
@@ -119,10 +124,10 @@ async function forcedResolution() {
 const proxyList = [
   "https://proxy1.example.com/token/TOKEN1/https://dns.google/resolve",
   "https://proxy2.example.com/token/TOKEN2/https://dns.google/resolve",
-  "https://proxy3.example.com/token/TOKEN3/https://dns.google/resolve"
+  "https://proxy3.example.com/token/TOKEN3/https://dns.google/resolve",
 ];
 
-async function resolveWithFallback(domain, type = 'AAAA') {
+async function resolveWithFallback(domain, type = "AAAA") {
   for (const proxy of proxyList) {
     try {
       const result = await resolveDNS(domain, type, proxy);
@@ -132,7 +137,7 @@ async function resolveWithFallback(domain, type = 'AAAA') {
       continue;
     }
   }
-  throw new Error('所有代理服务均不可用');
+  throw new Error("所有代理服务均不可用");
 }
 ```
 
@@ -142,7 +147,7 @@ async function resolveWithFallback(domain, type = 'AAAA') {
 async function checkProxyHealth(proxyUrl) {
   try {
     // 测试解析一个常见域名
-    const result = await resolveDNS('google.com', 'A', proxyUrl);
+    const result = await resolveDNS("google.com", "A", proxyUrl);
     return result && result.Status === 0;
   } catch (error) {
     return false;
@@ -156,7 +161,7 @@ async function getHealthyProxy() {
       return proxy;
     }
   }
-  throw new Error('没有可用的健康代理');
+  throw new Error("没有可用的健康代理");
 }
 ```
 
@@ -167,13 +172,14 @@ async function getHealthyProxy() {
 ```javascript
 // 在企业内网或受限网络中使用
 async function corporateDNSLookup() {
-  const corporateProxy = "https://corporate-proxy.company.com/token/CORP_TOKEN/https://dns.google/resolve";
-  
-  const domains = ['github.com', 'stackoverflow.com', 'npmjs.com'];
-  
+  const corporateProxy =
+    "https://corporate-proxy.company.com/token/CORP_TOKEN/https://dns.google/resolve";
+
+  const domains = ["github.com", "stackoverflow.com", "npmjs.com"];
+
   for (const domain of domains) {
     try {
-      const result = await resolveDNS(domain, 'A', corporateProxy);
+      const result = await resolveDNS(domain, "A", corporateProxy);
       console.log(`${domain} 解析成功:`, result.Answer?.[0]?.data);
     } catch (error) {
       console.error(`${domain} 解析失败:`, error.message);
@@ -187,17 +193,25 @@ async function corporateDNSLookup() {
 ```javascript
 // 访问特定地区的 DNS 服务
 async function geoBypassLookup() {
-  const usProxy = "https://us-proxy.example.com/token/US_TOKEN/https://dns.google/resolve";
-  const euProxy = "https://eu-proxy.example.com/token/EU_TOKEN/https://dns.google/resolve";
-  
+  const usProxy =
+    "https://us-proxy.example.com/token/US_TOKEN/https://dns.google/resolve";
+  const euProxy =
+    "https://eu-proxy.example.com/token/EU_TOKEN/https://dns.google/resolve";
+
   // 同时使用多个地区的代理进行对比
   const [usResult, euResult] = await Promise.allSettled([
-    resolveDNS('example.com', 'A', usProxy),
-    resolveDNS('example.com', 'A', euProxy)
+    resolveDNS("example.com", "A", usProxy),
+    resolveDNS("example.com", "A", euProxy),
   ]);
-  
-  console.log('美国代理结果:', usResult.status === 'fulfilled' ? usResult.value : usResult.reason);
-  console.log('欧洲代理结果:', euResult.status === 'fulfilled' ? euResult.value : euResult.reason);
+
+  console.log(
+    "美国代理结果:",
+    usResult.status === "fulfilled" ? usResult.value : usResult.reason,
+  );
+  console.log(
+    "欧洲代理结果:",
+    euResult.status === "fulfilled" ? euResult.value : euResult.reason,
+  );
 }
 ```
 
@@ -206,13 +220,18 @@ async function geoBypassLookup() {
 ```javascript
 // 使用隐私友好的代理服务
 async function privateDNSLookup() {
-  const privacyProxy = "https://privacy-proxy.example.com/token/PRIVACY_TOKEN/https://dns.google/resolve";
-  
+  const privacyProxy =
+    "https://privacy-proxy.example.com/token/PRIVACY_TOKEN/https://dns.google/resolve";
+
   try {
-    const result = await resolveDNS('sensitive-domain.com', 'AAAA', privacyProxy);
+    const result = await resolveDNS(
+      "sensitive-domain.com",
+      "AAAA",
+      privacyProxy,
+    );
     return result;
   } catch (error) {
-    console.error('隐私代理解析失败:', error.message);
+    console.error("隐私代理解析失败:", error.message);
     throw error;
   }
 }
@@ -235,12 +254,12 @@ export async function optimizedResolveDNS(domain, type, resolverUrl) {
   const url = new URL(resolverUrl);
   url.searchParams.append("name", domain);
   url.searchParams.append("type", type);
-  
+
   const response = await fetch(url, {
     dispatcher: dnsAgent,
-    keepalive: true
+    keepalive: true,
   });
-  
+
   return response.json();
 }
 ```
@@ -254,18 +273,18 @@ const CACHE_TTL = 5 * 60 * 1000; // 5分钟缓存
 export async function cachedResolveDNS(domain, type, resolverUrl) {
   const cacheKey = `${domain}:${type}`;
   const cached = dnsCache.get(cacheKey);
-  
+
   if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
     return cached.data;
   }
-  
+
   const result = await resolveDNS(domain, type, resolverUrl);
-  
+
   dnsCache.set(cacheKey, {
     data: result,
-    timestamp: Date.now()
+    timestamp: Date.now(),
   });
-  
+
   return result;
 }
 ```
@@ -274,17 +293,17 @@ export async function cachedResolveDNS(domain, type, resolverUrl) {
 
 ```javascript
 async function batchResolveDNS(queries, resolverUrl) {
-  const promises = queries.map(({ domain, type }) => 
+  const promises = queries.map(({ domain, type }) =>
     resolveDNS(domain, type, resolverUrl)
   );
-  
+
   try {
     const results = await Promise.allSettled(promises);
     return results.map((result, index) => ({
       query: queries[index],
       status: result.status,
-      data: result.status === 'fulfilled' ? result.value : null,
-      error: result.status === 'rejected' ? result.reason : null
+      data: result.status === "fulfilled" ? result.value : null,
+      error: result.status === "rejected" ? result.reason : null,
     }));
   } catch (error) {
     throw new Error(`批量 DNS 解析失败: ${error.message}`);
@@ -300,7 +319,7 @@ async function batchResolveDNS(queries, resolverUrl) {
 // 使用环境变量管理敏感令牌
 const PROXY_TOKENS = {
   primary: process.env.DNS_PROXY_TOKEN_PRIMARY,
-  backup: process.env.DNS_PROXY_TOKEN_BACKUP
+  backup: process.env.DNS_PROXY_TOKEN_BACKUP,
 };
 
 function buildProxyUrl(token, targetService) {
@@ -314,21 +333,21 @@ function buildProxyUrl(token, targetService) {
 function validateProxyUrl(url) {
   try {
     const parsed = new URL(url);
-    
+
     // 验证协议
-    if (!['https:', 'http:'].includes(parsed.protocol)) {
-      throw new Error('仅支持 HTTP/HTTPS 协议');
+    if (!["https:", "http:"].includes(parsed.protocol)) {
+      throw new Error("仅支持 HTTP/HTTPS 协议");
     }
-    
+
     // 验证域名白名单
-    const allowedHosts = ['proxy1.example.com', 'proxy2.example.com'];
+    const allowedHosts = ["proxy1.example.com", "proxy2.example.com"];
     if (!allowedHosts.includes(parsed.hostname)) {
-      throw new Error('不允许的代理服务器');
+      throw new Error("不允许的代理服务器");
     }
-    
+
     return true;
   } catch (error) {
-    console.error('代理 URL 验证失败:', error.message);
+    console.error("代理 URL 验证失败:", error.message);
     return false;
   }
 }
@@ -341,16 +360,16 @@ function validateProxyUrl(url) {
 ```javascript
 async function monitoredResolveDNS(domain, type, resolverUrl) {
   const startTime = Date.now();
-  
+
   try {
     const result = await resolveDNS(domain, type, resolverUrl);
     const duration = Date.now() - startTime;
-    
+
     console.log(`DNS 解析耗时: ${duration}ms`);
     console.log(`查询域名: ${domain}`);
     console.log(`记录类型: ${type}`);
     console.log(`代理服务: ${resolverUrl}`);
-    
+
     return result;
   } catch (error) {
     const duration = Date.now() - startTime;
@@ -363,31 +382,31 @@ async function monitoredResolveDNS(domain, type, resolverUrl) {
 ### 2. 调试模式
 
 ```javascript
-const DEBUG = process.env.DEBUG_DNS_RESOLVER === 'true';
+const DEBUG = process.env.DEBUG_DNS_RESOLVER === "true";
 
 async function debugResolveDNS(domain, type, resolverUrl) {
   if (DEBUG) {
-    console.log('🔍 DNS 解析调试信息:');
+    console.log("🔍 DNS 解析调试信息:");
     console.log(`  域名: ${domain}`);
     console.log(`  类型: ${type}`);
     console.log(`  代理: ${resolverUrl}`);
   }
-  
+
   const url = new URL(resolverUrl);
   url.searchParams.append("name", domain);
   url.searchParams.append("type", type);
-  
+
   if (DEBUG) {
     console.log(`  完整 URL: ${url.toString()}`);
   }
-  
+
   const response = await fetch(url);
-  
+
   if (DEBUG) {
     console.log(`  响应状态: ${response.status}`);
     console.log(`  响应头:`, Object.fromEntries(response.headers.entries()));
   }
-  
+
   return response.json();
 }
 ```
@@ -420,10 +439,10 @@ async function debugResolveDNS(domain, type, resolverUrl) {
    // 检查代理服务状态
    async function diagnoseProxy(proxyUrl) {
      try {
-       const response = await fetch(proxyUrl, { method: 'HEAD' });
+       const response = await fetch(proxyUrl, { method: "HEAD" });
        return response.ok;
      } catch (error) {
-       console.error('代理服务诊断失败:', error.message);
+       console.error("代理服务诊断失败:", error.message);
        return false;
      }
    }
@@ -432,10 +451,15 @@ async function debugResolveDNS(domain, type, resolverUrl) {
 2. **DNS 查询超时**
    ```javascript
    // 添加超时控制
-   async function timeoutResolveDNS(domain, type, resolverUrl, timeout = 10000) {
+   async function timeoutResolveDNS(
+     domain,
+     type,
+     resolverUrl,
+     timeout = 10000,
+   ) {
      const controller = new AbortController();
      const timeoutId = setTimeout(() => controller.abort(), timeout);
-     
+
      try {
        const result = await resolveDNS(domain, type, resolverUrl);
        clearTimeout(timeoutId);
@@ -452,10 +476,10 @@ async function debugResolveDNS(domain, type, resolverUrl) {
    // 网络连接检查
    async function checkNetworkConnectivity() {
      try {
-       const response = await fetch('https://httpbin.org/ip');
+       const response = await fetch("https://httpbin.org/ip");
        return response.ok;
      } catch (error) {
-       console.error('网络连接检查失败:', error.message);
+       console.error("网络连接检查失败:", error.message);
        return false;
      }
    }

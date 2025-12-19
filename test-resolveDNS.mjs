@@ -31,7 +31,7 @@ async function testDirectFetch() {
   // 创建与 resolveDNS 相同的 Agent 配置
   const agent = new Agent({
     connect: {
-      lookup: async (hostname, options) => {
+      lookup: async (hostname, options, callback) => {
         console.log(`🔍 正在解析: ${hostname}`);
 
         // 检查是否在强制映射表中

@@ -10,7 +10,7 @@ console.log("-".repeat(50));
 // 创建自定义 Agent，实现 DNS 强制解析
 const agent = new Agent({
   connect: {
-    lookup: async (hostname, options) => {
+    lookup: async (hostname, options, callback) => {
       console.log(`[DNS查询] 尝试解析域名: ${hostname}`);
 
       // 自定义 DNS 映射
@@ -84,7 +84,7 @@ class DnsInterceptorAgent extends Agent {
       ...options,
       connect: {
         ...options.connect,
-        lookup: async (hostname, opts) => {
+        lookup: async (hostname, opts, callback) => {
           // 日志记录
           console.log(`[拦截器] DNS查询: ${hostname}`);
 
@@ -161,7 +161,7 @@ const dnsConfig = {
 function createConfigurableAgent(config) {
   return new Agent({
     connect: {
-      lookup: async (hostname, options) => {
+      lookup: async (hostname, options, callback) => {
         // 检查缓存
         const cacheKey = `${hostname}:${options.family || 4}`;
         if (config.enableCache && config.cache.has(cacheKey)) {

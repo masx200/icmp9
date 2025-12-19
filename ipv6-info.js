@@ -46,9 +46,9 @@ class IPv6InfoFetcher {
       console.log(`🔍 正在解析域名 ${domain} 的IPv6地址...`);
       const ipv6Addresses = await this.lookupipv6(domain);
 
-
       if (ipv6Addresses.length > 0) {
-        const ipv6 = ipv6Addresses[Math.floor(Math.random() * ipv6Addresses.length)]; // 随机选择一个IPv6地址
+        const ipv6 =
+          ipv6Addresses[Math.floor(Math.random() * ipv6Addresses.length)]; // 随机选择一个IPv6地址
         console.log(`✅ 成功解析到 ${domain} 的IPv6地址: ${ipv6}`);
         console.log(`📍 可用IPv6地址列表: [${ipv6Addresses.join(", ")}]`);
         return `[${ipv6}]`;
