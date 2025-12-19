@@ -252,6 +252,39 @@ class IPv6InfoFetcher {
   }
 
   /**
+   * 使用 curl 调用 api6.ipify.org API 获取IPv6地址
+   */
+  async fetchFromIPify() {
+    try {
+      console.log("正在从 api6.ipify.org 获取IPv6信息...");
+      const { stdout } = await execAsync(
+        'curl -s "https://api6.ipify.org/?format=json" -H "User-Agent:Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.113 Safari/537.36"',
+      );
+
+      const data = JSON.parse(stdout);
+
+      // 验证是否为IPv6地址
+      if (data.ip && this.isIPv6(data.ip)) {
+        this.ipinfo = Object.assign({}, data, {
+          ...this.ipinfo,
+          ip: data.ip,
+          source: this.ipinfo.source === "unknown" ? "api6.ipify.org" : "combined",
+          isIPv6: true, // 明确设置为 true，因为我们已经验证了
+        });
+
+        console.log(`✅ api6.ipify.org 获取IPv6成功: ${data.ip}`);
+        return true;
+      } else {
+        console.log("❌ api6.ipify.org 返回的不是IPv6地址");
+        return false;
+      }
+    } catch (error) {
+      console.error("❌ api6.ipify.org 获取失败:", error.message);
+      return false;
+    }
+  }
+
+  /**
    * 检查是否为IPv6地址
    */
   isIPv6(ip) {
@@ -274,6 +307,7 @@ class IPv6InfoFetcher {
       { name: "6.ipshudi.com", method: "fetchFromIPshudi" },
       { name: "api.ip.sb", method: "fetchFromIPSb" },
       { name: "ipv6.ipleak.net", method: "fetchFromIPLeak" },
+      { name: "api6.ipify.org", method: "fetchFromIPify" },
       { name: "ifconfig.co", method: "fetchFromIfConfig" },
     ];
 
