@@ -1,4 +1,5 @@
 import { Agent } from "undici";
+import { lookup } from "dns";
 
 console.log("=== Undici DNS 强制解析简单测试 ===\n");
 
@@ -23,7 +24,7 @@ const agent = new Agent({
       }
 
       // 使用默认 DNS 解析
-      require("dns").lookup(hostname, options, callback);
+      lookup(hostname, options, callback);
     },
   },
 });

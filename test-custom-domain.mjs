@@ -1,4 +1,5 @@
 import { Agent } from "undici";
+import { lookup } from "dns";
 
 console.log("=== 测试特定域名强制 DNS 解析 ===\n");
 
@@ -25,7 +26,7 @@ const agent = new Agent({
 
       // 其他域名使用系统 DNS
       console.log(`[DNS系统] 使用系统 DNS 解析: ${hostname}`);
-      require("dns").lookup(hostname, options, callback);
+      lookup(hostname, options, callback);
     },
   },
 });
@@ -129,7 +130,7 @@ async function verifyDnsForce() {
           console.log(`[测试DNS] 强制解析到测试 IP: 1.2.3.4`);
           return callback(null, [{ address: "1.2.3.4", family: 4 }]);
         }
-        require("dns").lookup(hostname, options, callback);
+        lookup(hostname, options, callback);
       },
     },
   });

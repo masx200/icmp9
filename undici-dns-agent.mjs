@@ -3,6 +3,7 @@
 import { Agent } from "undici";
 import { resolveDNS } from "./dnsResolver.mjs";
 import { lookup } from "dns/promises";
+import { lookup as dnsLookup } from "dns";
 
 // 强制DNS映射表
 const FORCED_DNS_MAPPING = {
@@ -197,7 +198,6 @@ export class HTTPClient {
               }
             }
             // 对于其他域名，回退到系统DNS
-            const { lookup: dnsLookup } = require("dns");
             dnsLookup(hostname, options, callback);
           },
         },

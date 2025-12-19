@@ -1,4 +1,5 @@
 import { Agent, setGlobalDispatcher } from "undici";
+import { lookup } from "dns";
 
 console.log("=== Undici DNS 强制解析测试 (最终版) ===\n");
 
@@ -36,7 +37,7 @@ function createDnsAgent(mappings) {
 
         // 使用系统默认 DNS
         console.log(`[DNS System] Using system DNS for ${hostname}`);
-        require("dns").lookup(hostname, options, callback);
+                lookup(hostname, options, callback);
       },
     },
   });
@@ -152,7 +153,7 @@ async function testDynamicMapping() {
           }]);
         }
 
-        require("dns").lookup(hostname, options, callback);
+        lookup(hostname, options, callback);
       },
     },
   });
