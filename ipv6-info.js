@@ -118,7 +118,7 @@ class IPv6InfoFetcher {
     try {
       console.log("正在从 api.ip.sb 获取IPv6信息...");
       const { stdout } = await execAsync(
-        'curl -s https://api.ip.sb/geoip -H "User-Agent:Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.113 Safari/537.36" -6',
+        'curl -s https://api-ipv6.ip.sb/geoip -H "User-Agent:Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.113 Safari/537.36" -6',
       );
 
       const data = JSON.parse(stdout);
