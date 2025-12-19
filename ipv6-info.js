@@ -208,6 +208,50 @@ class IPv6InfoFetcher {
   }
 
   /**
+   * 使用 curl 调用 6.ipshudi.com API 获取IPv6地址
+   */
+  async fetchFromIPshudi() {
+    try {
+      console.log("正在从 6.ipshudi.com 获取IPv6信息...");
+      const { stdout } = await execAsync(
+        'curl -s "https://6.ipshudi.com/" ' +
+        '-H "accept: application/json, text/javascript, */*; q=0.01" ' +
+        '-H "accept-language: zh-CN,zh;q=0.9,en;q=0.8" ' +
+        '-H "sec-ch-ua: \\"Google Chrome\\";v=\\"143\\", \\"Chromium\\";v=\\"143\\", \\"Not A(Brand\\";v=\\"24\\"" ' +
+        '-H "sec-ch-ua-mobile: ?0" ' +
+        '-H "sec-ch-ua-platform: \\"Windows\\"" ' +
+        '-H "sec-fetch-dest: empty" ' +
+        '-H "sec-fetch-mode: cors" ' +
+        '-H "sec-fetch-site: same-site" ' +
+        '-H "Referer: https://www.ipshudi.com/"'
+      );
+
+      const data = JSON.parse(stdout);
+
+      // 验证响应状态和IPv6地址
+      if (data.status && data.code === 0 && data.data && this.isIPv6(data.data)) {
+        this.ipinfo = Object.assign({},data,this.ipinfo, {
+          ip: data.data,
+          source: this.ipinfo.source === "unknown" ? "6.ipshudi.com" : "combined",
+          isIPv6: true,
+        });
+
+        console.log(`✅ 6.ipshudi.com 获取IPv6成功: ${data.data}`);
+        return true;
+      } else {
+        console.log("❌ 6.ipshudi.com 返回的数据无效");
+        if (data.msg) {
+          console.log(`   错误信息: ${data.msg}`);
+        }
+        return false;
+      }
+    } catch (error) {
+      console.error("❌ 6.ipshudi.com 获取失败:", error.message);
+      return false;
+    }
+  }
+
+  /**
    * 检查是否为IPv6地址
    */
   isIPv6(ip) {
@@ -227,6 +271,7 @@ class IPv6InfoFetcher {
     // 按顺序尝试各个API
     const apis = [
       { name: "ipinfo.io", method: "fetchFromIPInfo" },
+      { name: "6.ipshudi.com", method: "fetchFromIPshudi" },
       { name: "api.ip.sb", method: "fetchFromIPSb" },
       { name: "ipv6.ipleak.net", method: "fetchFromIPLeak" },
       { name: "ifconfig.co", method: "fetchFromIfConfig" },
