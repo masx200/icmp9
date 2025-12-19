@@ -26,6 +26,7 @@ class IPv6InfoFetcher {
       org: null,
       user_agent: null,
       source: "unknown",
+      sources: [],
       isIPv6: true,
     };
   }
@@ -57,7 +58,7 @@ class IPv6InfoFetcher {
           source: "ipinfo.io",
           isIPv6: true, // 明确设置为 true，因为我们已经验证了
         });
-
+        this.ipinfo.sources.push("ipinfo.io");
         console.log(`✅ ipinfo.io 获取IPv6成功: ${data.ip} (${data.country})`);
         return true;
       } else {
@@ -96,7 +97,7 @@ class IPv6InfoFetcher {
           source: this.ipinfo.source === "unknown" ? "ifconfig.co" : "combined",
           isIPv6: true, // 明确设置为 true，因为我们已经验证了
         });
-
+        this.ipinfo.sources.push("ifconfig.co");
         console.log(
           `✅ ifconfig.co 获取IPv6成功: ${data.ip} (${data.country})`,
         );
@@ -112,11 +113,11 @@ class IPv6InfoFetcher {
   }
 
   /**
-   * 使用 curl 调用 api.ip.sb API 获取IPv6地址
+   * 使用 curl 调用 api-ipv6.ip.sb API 获取IPv6地址
    */
   async fetchFromIPSb() {
     try {
-      console.log("正在从 api.ip.sb 获取IPv6信息...");
+      console.log("正在从 api-ipv6.ip.sb 获取IPv6信息...");
       const { stdout } = await execAsync(
         'curl -s https://api-ipv6.ip.sb/geoip -H "User-Agent:Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.113 Safari/537.36" -6',
       );
@@ -140,18 +141,22 @@ class IPv6InfoFetcher {
           as_name: data.asn_organization || data.isp,
           org: data.organization,
           continent_code: data.continent_code,
-          source: this.ipinfo.source === "unknown" ? "api.ip.sb" : "combined",
+          source: this.ipinfo.source === "unknown"
+            ? "api-ipv6.ip.sb"
+            : "combined",
           isIPv6: true, // 明确设置为 true，因为我们已经验证了
         });
-
-        console.log(`✅ api.ip.sb 获取IPv6成功: ${data.ip} (${data.country})`);
+        this.ipinfo.sources.push("api-ipv6.ip.sb");
+        console.log(
+          `✅ api-ipv6.ip.sb 获取IPv6成功: ${data.ip} (${data.country})`,
+        );
         return true;
       } else {
-        console.log("❌ api.ip.sb 返回的不是IPv6地址");
+        console.log("❌ api-ipv6.ip.sb 返回的不是IPv6地址");
         return false;
       }
     } catch (error) {
-      console.error("❌ api.ip.sb 获取失败:", error.message);
+      console.error("❌ api-ipv6.ip.sb 获取失败:", error.message);
       return false;
     }
   }
@@ -192,7 +197,7 @@ class IPv6InfoFetcher {
             : "combined",
           isIPv6: true, // 明确设置为 true，因为我们已经验证了
         });
-
+        this.ipinfo.sources.push("ipv6.ipleak.net");
         console.log(
           `✅ ipv6.ipleak.net 获取IPv6成功: ${data.ip} (${data.country_name})`,
         );
@@ -215,27 +220,31 @@ class IPv6InfoFetcher {
       console.log("正在从 6.ipshudi.com 获取IPv6信息...");
       const { stdout } = await execAsync(
         'curl -s "https://6.ipshudi.com/" ' +
-        '-H "accept: application/json, text/javascript, */*; q=0.01" ' +
-        '-H "accept-language: zh-CN,zh;q=0.9,en;q=0.8" ' +
-        '-H "sec-ch-ua: \\"Google Chrome\\";v=\\"143\\", \\"Chromium\\";v=\\"143\\", \\"Not A(Brand\\";v=\\"24\\"" ' +
-        '-H "sec-ch-ua-mobile: ?0" ' +
-        '-H "sec-ch-ua-platform: \\"Windows\\"" ' +
-        '-H "sec-fetch-dest: empty" ' +
-        '-H "sec-fetch-mode: cors" ' +
-        '-H "sec-fetch-site: same-site" ' +
-        '-H "Referer: https://www.ipshudi.com/"'
+          '-H "accept: application/json, text/javascript, */*; q=0.01" ' +
+          '-H "accept-language: zh-CN,zh;q=0.9,en;q=0.8" ' +
+          '-H "sec-ch-ua: \\"Google Chrome\\";v=\\"143\\", \\"Chromium\\";v=\\"143\\", \\"Not A(Brand\\";v=\\"24\\"" ' +
+          '-H "sec-ch-ua-mobile: ?0" ' +
+          '-H "sec-ch-ua-platform: \\"Windows\\"" ' +
+          '-H "sec-fetch-dest: empty" ' +
+          '-H "sec-fetch-mode: cors" ' +
+          '-H "sec-fetch-site: same-site" ' +
+          '-H "Referer: https://www.ipshudi.com/"',
       );
 
       const data = JSON.parse(stdout);
 
       // 验证响应状态和IPv6地址
-      if (data.status && data.code === 0 && data.data && this.isIPv6(data.data)) {
-        this.ipinfo = Object.assign({},data,this.ipinfo, {
+      if (
+        data.status && data.code === 0 && data.data && this.isIPv6(data.data)
+      ) {
+        this.ipinfo = Object.assign({}, data, this.ipinfo, {
           ip: data.data,
-          source: this.ipinfo.source === "unknown" ? "6.ipshudi.com" : "combined",
+          source: this.ipinfo.source === "unknown"
+            ? "6.ipshudi.com"
+            : "combined",
           isIPv6: true,
         });
-
+        this.ipinfo.sources.push("6.ipshudi.com");
         console.log(`✅ 6.ipshudi.com 获取IPv6成功: ${data.data}`);
         return true;
       } else {
@@ -268,10 +277,12 @@ class IPv6InfoFetcher {
         this.ipinfo = Object.assign({}, data, {
           ...this.ipinfo,
           ip: data.ip,
-          source: this.ipinfo.source === "unknown" ? "api6.ipify.org" : "combined",
+          source: this.ipinfo.source === "unknown"
+            ? "api6.ipify.org"
+            : "combined",
           isIPv6: true, // 明确设置为 true，因为我们已经验证了
         });
-
+        this.ipinfo.sources.push("api6.ipify.org");
         console.log(`✅ api6.ipify.org 获取IPv6成功: ${data.ip}`);
         return true;
       } else {
@@ -305,7 +316,7 @@ class IPv6InfoFetcher {
     const apis = [
       { name: "ipinfo.io", method: "fetchFromIPInfo" },
       { name: "6.ipshudi.com", method: "fetchFromIPshudi" },
-      { name: "api.ip.sb", method: "fetchFromIPSb" },
+      { name: "api-ipv6.ip.sb", method: "fetchFromIPSb" },
       { name: "ipv6.ipleak.net", method: "fetchFromIPLeak" },
       { name: "api6.ipify.org", method: "fetchFromIPify" },
       { name: "ifconfig.co", method: "fetchFromIfConfig" },
